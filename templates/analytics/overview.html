@@ -1,6 +1,11 @@
 {% extends 'base.html' %}
+{% load static %}
 
 {% block title %}Analytics - Expense Tracker{% endblock %}
+
+{% block extra_head %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+{% endblock %}
 
 {% block content %}
 <main class="p-4 md:p-8">
@@ -10,24 +15,202 @@
             <p class="text-gray-500 dark:text-gray-400 mt-1">Visualize your spending patterns</p>
         </div>
 
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 mb-8">
+            <div class="glass dark:dark-glass rounded-2xl p-6">
+                <p class="text-sm font-medium text-gray-500 dark:text-gray-400">Total Balance</p>
+                <p class="text-2xl font-bold mt-2 {% if data.balance >= 0 %}text-gray-900 dark:text-gray-100{% else %}text-red-600 dark:text-red-400{% endif %}">
+                    ${{ data.balance|floatformat:2 }}
+                </p>
+            </div>
+            <div class="glass dark:dark-glass rounded-2xl p-6">
+                <p class="text-sm font-medium text-gray-500 dark:text-gray-400">Total Income</p>
+                <p class="text-2xl font-bold text-green-600 dark:text-green-400 mt-2">+${{ data.income|floatformat:2 }}</p>
+            </div>
+            <div class="glass dark:dark-glass rounded-2xl p-6">
+                <p class="text-sm font-medium text-gray-500 dark:text-gray-400">Total Expenses</p>
+                <p class="text-2xl font-bold text-red-600 dark:text-red-400 mt-2">-${{ data.expenses|floatformat:2 }}</p>
+            </div>
+            <div class="glass dark:dark-glass rounded-2xl p-6">
+                <p class="text-sm font-medium text-gray-500 dark:text-gray-400">Avg Monthly Expense</p>
+                <p class="text-2xl font-bold text-gray-900 dark:text-gray-100 mt-2">${{ data.avg_monthly_expense|floatformat:2 }}</p>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6 mb-8">
+            <div class="glass dark:dark-glass rounded-2xl p-6">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-lg font-semibold">Expenses by Category</h3>
+                    <span class="text-xs text-gray-400">{{ data.category_labels|length }} categories</span>
+                </div>
+                <canvas id="expenseCategoryChart" height="220"></canvas>
+            </div>
+            <div class="glass dark:dark-glass rounded-2xl p-6">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-lg font-semibold">Income by Category</h3>
+                    <span class="text-xs text-gray-400">{{ data.income_cat_labels|length }} categories</span>
+                </div>
+                <canvas id="incomeCategoryChart" height="220"></canvas>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6 mb-8">
+            <div class="glass dark:dark-glass rounded-2xl p-6">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-lg font-semibold">Monthly Income vs Expenses</h3>
+                </div>
+                <canvas id="monthlyChart" height="220"></canvas>
+            </div>
+            <div class="glass dark:dark-glass rounded-2xl p-6">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-lg font-semibold">Cumulative Balance</h3>
+                </div>
+                <canvas id="cumulativeChart" height="220"></canvas>
+            </div>
+        </div>
+
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6">
-            <div class="glass dark:dark-glass rounded-2xl p-6">
-                <h3 class="text-lg font-semibold mb-4">Spending by Category</h3>
-                {% include 'includes/empty_state.html' with title="No data yet" message="Add transactions to see category breakdown." %}
+            <div class="glass dark:dark-glass rounded-2xl">
+                <div class="px-6 py-4 border-b border-gray-200/50 dark:border-white/5">
+                    <h3 class="text-lg font-semibold">Top Expense Categories</h3>
+                </div>
+                <div class="divide-y divide-gray-100 dark:divide-white/5">
+                    {% for cat in data.top_expense_cats %}
+                    <div class="px-6 py-4 flex items-center justify-between">
+                        <span class="text-sm font-medium">{{ cat.category__name|default:"Uncategorized" }}</span>
+                        <span class="text-sm font-semibold text-red-600 dark:text-red-400">${{ cat.total|floatformat:2 }}</span>
+                    </div>
+                    {% empty %}
+                    <div class="px-6 py-8">
+                        {% include 'includes/empty_state.html' with title="No expenses" message="Add expense transactions to see rankings." %}
+                    </div>
+                    {% endfor %}
+                </div>
             </div>
-            <div class="glass dark:dark-glass rounded-2xl p-6">
-                <h3 class="text-lg font-semibold mb-4">Income vs Expenses</h3>
-                {% include 'includes/empty_state.html' with title="No data yet" message="Add transactions to see comparisons." %}
-            </div>
-            <div class="glass dark:dark-glass rounded-2xl p-6">
-                <h3 class="text-lg font-semibold mb-4">Monthly Trend</h3>
-                {% include 'includes/empty_state.html' with title="No data yet" message="Add transactions to see trends." %}
-            </div>
-            <div class="glass dark:dark-glass rounded-2xl p-6">
-                <h3 class="text-lg font-semibold mb-4">Top Categories</h3>
-                {% include 'includes/empty_state.html' with title="No data yet" message="Add transactions to see top categories." %}
+            <div class="glass dark:dark-glass rounded-2xl">
+                <div class="px-6 py-4 border-b border-gray-200/50 dark:border-white/5">
+                    <h3 class="text-lg font-semibold">Latest Transactions</h3>
+                </div>
+                <div class="divide-y divide-gray-100 dark:divide-white/5">
+                    {% for t in data.latest_transactions %}
+                    <div class="px-6 py-3 flex items-center justify-between">
+                        <div class="min-w-0 flex-1">
+                            <p class="text-sm font-medium truncate">{{ t.title }}</p>
+                            <p class="text-xs text-gray-500 dark:text-gray-400">{{ t.date|date:"M d, Y" }} · {{ t.category|default:"Uncategorized" }}</p>
+                        </div>
+                        <span class="text-sm font-semibold flex-shrink-0 ml-4 {% if t.type == 'income' %}text-green-600 dark:text-green-400{% else %}text-red-600 dark:text-red-400{% endif %}">
+                            {% if t.type == 'income' %}+{% else %}-{% endif %}${{ t.amount|floatformat:2 }}
+                        </span>
+                    </div>
+                    {% empty %}
+                    <div class="px-6 py-8">
+                        {% include 'includes/empty_state.html' with title="No transactions" message="Add transactions to see them here." %}
+                    </div>
+                    {% endfor %}
+                </div>
             </div>
         </div>
     </div>
 </main>
+{% endblock %}
+
+{% block extra_body %}
+<script>
+const expenseCatData = {{ chart_json.category|safe }};
+const incomeCatData = {{ chart_json.income_cat|safe }};
+const monthlyData = {{ chart_json.monthly|safe }};
+const cumulativeData = {{ chart_json.cumulative|safe }};
+const isDark = document.documentElement.classList.contains('dark');
+const textColor = isDark ? '#9ca3af' : '#6b7280';
+const gridColor = isDark ? '#1f2937' : '#f3f4f6';
+const colors = ['#3b82f6', '#ef4444', '#10b981', '#f59e0b', '#8b5cf6', '#ec4899', '#14b8a6', '#f97316'];
+
+function renderChart(id, config) {
+    const canvas = document.getElementById(id);
+    if (!canvas) return;
+    const existing = Chart.getChart(canvas);
+    if (existing) existing.destroy();
+    if (config.data.labels && config.data.labels.length) {
+        new Chart(canvas, config);
+    } else {
+        canvas.parentElement.innerHTML = '<p class="text-gray-500 dark:text-gray-400 text-sm text-center py-8">No data available yet.</p>';
+    }
+}
+
+renderChart('expenseCategoryChart', {
+    type: 'doughnut',
+    data: {
+        labels: expenseCatData.labels,
+        datasets: [{ data: expenseCatData.values, backgroundColor: colors, borderWidth: 0 }]
+    },
+    options: {
+        responsive: true,
+        plugins: {
+            legend: { position: 'right', labels: { boxWidth: 12, padding: 12, font: { size: 11 }, color: textColor } }
+        }
+    }
+});
+
+renderChart('incomeCategoryChart', {
+    type: 'doughnut',
+    data: {
+        labels: incomeCatData.labels,
+        datasets: [{ data: incomeCatData.values, backgroundColor: colors, borderWidth: 0 }]
+    },
+    options: {
+        responsive: true,
+        plugins: {
+            legend: { position: 'right', labels: { boxWidth: 12, padding: 12, font: { size: 11 }, color: textColor } }
+        }
+    }
+});
+
+renderChart('monthlyChart', {
+    type: 'bar',
+    data: {
+        labels: monthlyData.labels,
+        datasets: [
+            { label: 'Income', data: monthlyData.income, backgroundColor: '#10b981', borderRadius: 6 },
+            { label: 'Expenses', data: monthlyData.expenses, backgroundColor: '#ef4444', borderRadius: 6 },
+        ]
+    },
+    options: {
+        responsive: true,
+        scales: {
+            y: { beginAtZero: true, grid: { color: gridColor }, ticks: { color: textColor } },
+            x: { grid: { display: false }, ticks: { color: textColor } }
+        },
+        plugins: {
+            legend: { position: 'top', labels: { boxWidth: 12, padding: 12, font: { size: 12 }, color: textColor } }
+        }
+    }
+});
+
+renderChart('cumulativeChart', {
+    type: 'line',
+    data: {
+        labels: cumulativeData.labels,
+        datasets: [{
+            label: 'Balance',
+            data: cumulativeData.balance,
+            borderColor: '#3b82f6',
+            backgroundColor: 'rgba(59, 130, 246, 0.1)',
+            fill: true,
+            tension: 0.3,
+            pointRadius: 3,
+            pointBackgroundColor: '#3b82f6',
+            borderWidth: 2,
+        }]
+    },
+    options: {
+        responsive: true,
+        scales: {
+            y: { grid: { color: gridColor }, ticks: { color: textColor } },
+            x: { grid: { display: false }, ticks: { color: textColor } }
+        },
+        plugins: {
+            legend: { display: false }
+        }
+    }
+});
+</script>
 {% endblock %}

@@ -5,6 +5,7 @@ from .views import (
     TransactionUpdateView,
     TransactionDeleteView,
     CategoryCreateView,
+    TransactionExportView,
 )
 
 app_name = 'transactions'
@@ -15,4 +16,5 @@ urlpatterns = [
     path('<int:pk>/update/', TransactionUpdateView.as_view(), name='update'),
     path('<int:pk>/delete/', TransactionDeleteView.as_view(), name='delete'),
     path('category/create/', CategoryCreateView.as_view(), name='category_create'),
+    path('export/', TransactionExportView.as_view(), name='export'),
 ]

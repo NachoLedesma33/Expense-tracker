@@ -1,3 +1,4 @@
+import csv
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.urls import reverse_lazy
 from django.views.generic import ListView, CreateView, UpdateView, DeleteView
@@ -6,7 +7,7 @@ from django.template.loader import render_to_string
 from django.contrib import messages
 from .models import Transaction, Category
 from .forms import TransactionForm, CategoryForm
-from services import get_filtered_transactions
+from services import get_filtered_transactions, export_transactions_csv
 
 
 class TransactionListView(LoginRequiredMixin, ListView):
@@ -16,12 +17,14 @@ class TransactionListView(LoginRequiredMixin, ListView):
     paginate_by = 20
 
     def get_queryset(self):
-        type_filter = self.request.GET.get('type', 'all')
-        category_id = self.request.GET.get('category', '')
         return get_filtered_transactions(
             self.request.user,
-            type_filter=type_filter,
-            category_id=category_id if category_id else None,
+            type_filter=self.request.GET.get('type', 'all'),
+            category_id=self.request.GET.get('category', ''),
+            date_from=self.request.GET.get('date_from', ''),
+            date_to=self.request.GET.get('date_to', ''),
+            search=self.request.GET.get('search', ''),
+            categories=self.request.GET.getlist('categories'),
         )
 
     def get_context_data(self, **kwargs):
@@ -31,16 +34,38 @@ class TransactionListView(LoginRequiredMixin, ListView):
         ctx['category_form'] = CategoryForm(user=self.request.user)
         ctx['current_type'] = self.request.GET.get('type', 'all')
         ctx['current_category'] = self.request.GET.get('category', '')
+        ctx['current_date_from'] = self.request.GET.get('date_from', '')
+        ctx['current_date_to'] = self.request.GET.get('date_to', '')
+        ctx['current_search'] = self.request.GET.get('search', '')
+        ctx['selected_categories'] = self.request.GET.getlist('categories')
         return ctx
 
     def get(self, request, *args, **kwargs):
         if request.headers.get('HX-Request'):
-            self.object_list = self.get_queryset()
-            context = self.get_context_data()
-            html = render_to_string('transactions/partials/transaction_rows.html', {
-                'transactions': context['object_list'],
-            }, request=request)
-            return HttpResponse(html)
+            target = request.headers.get('HX-Target', '')
+            if target == 'transaction-list':
+                self.object_list = self.get_queryset()
+                context = self.get_context_data()
+                page_obj = context.get('page_obj')
+                is_paginated = context.get('is_paginator')
+                paginator = context.get('paginator')
+                html = render_to_string('transactions/partials/transaction_rows.html', {
+                    'transactions': context['object_list'],
+                    'page_obj': page_obj,
+                    'is_paginated': is_paginated,
+                    'paginator': paginator,
+                }, request=request)
+                return HttpResponse(html)
+            elif target == 'search-results':
+                self.object_list = self.get_queryset()
+                context = self.get_context_data()
+                html = render_to_string('transactions/partials/transaction_rows.html', {
+                    'transactions': context['object_list'],
+                }, request=request)
+                return HttpResponse(html)
+            elif target == 'filter-count':
+                count = self.get_queryset().count()
+                return HttpResponse(f'{count} transaction{"s" if count != 1 else ""}')
         return super().get(request, *args, **kwargs)
 
 
@@ -162,3 +187,28 @@ class CategoryCreateView(LoginRequiredMixin, CreateView):
             }, request=self.request)
             return HttpResponse(html, status=422)
         return super().form_invalid(form)
+
+
+class TransactionExportView(LoginRequiredMixin, ListView):
+    def get(self, request, *args, **kwargs):
+        qs = export_transactions_csv(
+            request.user,
+            type_filter=request.GET.get('type', 'all'),
+            category_id=request.GET.get('category', ''),
+            date_from=request.GET.get('date_from', ''),
+            date_to=request.GET.get('date_to', ''),
+            search=request.GET.get('search', ''),
+        )
+        response = HttpResponse(content_type='text/csv')
+        response['Content-Disposition'] = 'attachment; filename="transactions.csv"'
+        writer = csv.writer(response)
+        writer.writerow(['Title', 'Amount', 'Type', 'Category', 'Date'])
+        for t in qs:
+            writer.writerow([
+                t.title,
+                t.amount,
+                t.type,
+                t.category.name if t.category else '',
+                t.date.isoformat(),
+            ])
+        return response

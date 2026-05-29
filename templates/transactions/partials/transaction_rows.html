@@ -42,3 +42,33 @@
     {% include 'includes/empty_state.html' with title="No transactions found" message="Try changing your filters or add a new transaction." %}
     {% endfor %}
 </div>
+
+{% if is_paginated %}
+<div class="px-4 md:px-6 py-4 border-t border-gray-100 dark:border-white/5 flex items-center justify-between">
+    <p class="text-sm text-gray-500 dark:text-gray-400">
+        Page {{ page_obj.number }} of {{ paginator.num_pages }}
+    </p>
+    <div class="flex items-center gap-2">
+        {% if page_obj.has_previous %}
+        <button
+            hx-get="{% url 'transactions:list' %}?page={{ page_obj.previous_page_number }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}"
+            hx-target="#transaction-list"
+            hx-indicator="#txn-loading"
+            class="px-3 py-1.5 rounded-lg text-sm font-medium border border-gray-200 dark:border-white/10 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 transition-all"
+        >
+            Previous
+        </button>
+        {% endif %}
+        {% if page_obj.has_next %}
+        <button
+            hx-get="{% url 'transactions:list' %}?page={{ page_obj.next_page_number }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}"
+            hx-target="#transaction-list"
+            hx-indicator="#txn-loading"
+            class="px-3 py-1.5 rounded-lg text-sm font-medium border border-gray-200 dark:border-white/10 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 transition-all"
+        >
+            Next
+        </button>
+        {% endif %}
+    </div>
+</div>
+{% endif %}
