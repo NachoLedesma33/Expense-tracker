@@ -79,5 +79,5 @@ TAILWIND_APP_NAME = 'theme'
 INTERNAL_IPS = ['127.0.0.1']
 
 LOGIN_URL = 'users:login'
-LOGIN_REDIRECT_URL = 'core:home'
+LOGIN_REDIRECT_URL = 'transactions:list'
 LOGOUT_REDIRECT_URL = 'users:login'

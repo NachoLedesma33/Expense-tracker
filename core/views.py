@@ -1,12 +1,16 @@
 import json
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.views.generic import TemplateView
-from django.shortcuts import redirect
+from django.views.generic import TemplateView, RedirectView
 from django.urls import reverse_lazy
+from django.shortcuts import redirect
 from services import get_dashboard_stats, get_expenses_by_category, get_monthly_income_vs_expenses
 
 
-class HomeView(LoginRequiredMixin, TemplateView):
+class HomeView(LoginRequiredMixin, RedirectView):
+    url = reverse_lazy('transactions:list')
+
+
+class DashboardView(LoginRequiredMixin, TemplateView):
     template_name = 'core/home.html'
 
     def get_context_data(self, **kwargs):
@@ -17,6 +21,5 @@ class HomeView(LoginRequiredMixin, TemplateView):
         return ctx
 
 
-class SettingsRedirectView(LoginRequiredMixin, TemplateView):
-    def get(self, request, *args, **kwargs):
-        return redirect('users:settings')
+class SettingsRedirectView(LoginRequiredMixin, RedirectView):
+    url = reverse_lazy('users:settings')
