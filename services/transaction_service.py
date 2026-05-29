@@ -4,12 +4,13 @@ from django.db.models.functions import TruncMonth
 from transactions.models import Transaction, Category
 
 
-def get_dashboard_stats():
-    income = Transaction.objects.filter(type='income').aggregate(total=Sum('amount'))['total'] or 0
-    expenses = Transaction.objects.filter(type='expense').aggregate(total=Sum('amount'))['total'] or 0
+def get_dashboard_stats(user):
+    qs = Transaction.objects.filter(user=user)
+    income = qs.filter(type='income').aggregate(total=Sum('amount'))['total'] or 0
+    expenses = qs.filter(type='expense').aggregate(total=Sum('amount'))['total'] or 0
     balance = income - expenses
-    count = Transaction.objects.count()
-    last_transactions = Transaction.objects.select_related('category')[:5]
+    count = qs.count()
+    last_transactions = qs.select_related('category')[:5]
     return {
         'balance': balance,
         'income': income,
@@ -19,9 +20,9 @@ def get_dashboard_stats():
     }
 
 
-def get_expenses_by_category():
+def get_expenses_by_category(user):
     data = (
-        Transaction.objects.filter(type='expense')
+        Transaction.objects.filter(user=user, type='expense')
         .values('category__name')
         .annotate(total=Sum('amount'))
         .order_by('-total')
@@ -31,14 +32,14 @@ def get_expenses_by_category():
     return {'labels': labels, 'values': values}
 
 
-def get_monthly_income_vs_expenses(months=6):
+def get_monthly_income_vs_expenses(user, months=6):
     today = date.today()
     start_date = today.replace(day=1)
     for _ in range(months - 1):
         start_date = start_date.replace(month=start_date.month - 1) if start_date.month > 1 else start_date.replace(year=start_date.year - 1, month=12)
 
     monthly = (
-        Transaction.objects.filter(date__gte=start_date, date__lte=today)
+        Transaction.objects.filter(user=user, date__gte=start_date, date__lte=today)
         .annotate(month=TruncMonth('date'))
         .values('month')
         .annotate(
@@ -53,8 +54,8 @@ def get_monthly_income_vs_expenses(months=6):
     return {'labels': labels, 'income': income_data, 'expenses': expense_data}
 
 
-def get_filtered_transactions(type_filter=None, category_id=None):
-    qs = Transaction.objects.select_related('category').all()
+def get_filtered_transactions(user, type_filter=None, category_id=None):
+    qs = Transaction.objects.filter(user=user).select_related('category')
     if type_filter and type_filter != 'all':
         qs = qs.filter(type=type_filter)
     if category_id:

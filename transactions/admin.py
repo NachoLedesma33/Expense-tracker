@@ -4,13 +4,14 @@ from .models import Category, Transaction
 
 @admin.register(Category)
 class CategoryAdmin(admin.ModelAdmin):
-    list_display = ['name']
+    list_display = ['name', 'user']
+    list_filter = ['user']
     search_fields = ['name']
 
 
 @admin.register(Transaction)
 class TransactionAdmin(admin.ModelAdmin):
-    list_display = ['title', 'amount', 'type', 'category', 'date']
-    list_filter = ['type', 'category', 'date']
+    list_display = ['title', 'amount', 'type', 'category', 'user', 'date']
+    list_filter = ['type', 'user', 'category', 'date']
     search_fields = ['title']
     date_hierarchy = 'date'

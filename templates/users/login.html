@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Login - Expense Tracker{% endblock %}
+
+{% block content %}
+<div class="min-h-screen flex items-center justify-center p-4">
+    <div class="w-full max-w-sm">
+        <div class="text-center mb-8">
+            <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center mx-auto mb-4">
+                <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
+                </svg>
+            </div>
+            <h1 class="text-xl font-semibold">Welcome back</h1>
+            <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">Sign in to your account</p>
+        </div>
+
+        <div class="glass dark:dark-glass rounded-2xl p-6">
+            <form method="post" novalidate class="space-y-4">
+                {% csrf_token %}
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">Username</label>
+                    <input type="text" name="username" placeholder="Enter your username" required
+                        class="w-full px-4 py-2.5 rounded-xl border border-gray-200 dark:border-white/10 bg-white dark:bg-gray-900 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 transition-all"
+                        {% if form.username.errors %}aria-invalid="true"{% endif %}>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">Password</label>
+                    <input type="password" name="password" placeholder="Enter your password" required
+                        class="w-full px-4 py-2.5 rounded-xl border border-gray-200 dark:border-white/10 bg-white dark:bg-gray-900 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 transition-all"
+                        {% if form.password.errors %}aria-invalid="true"{% endif %}>
+                </div>
+                {% if form.non_field_errors %}
+                <p class="text-red-500 dark:text-red-400 text-xs">{{ form.non_field_errors.0 }}</p>
+                {% endif %}
+                <button type="submit" class="w-full px-4 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-sm font-medium transition-all duration-200 shadow-lg shadow-blue-500/20 hover:shadow-blue-600/30">
+                    Sign in
+                </button>
+            </form>
+        </div>
+
+        <p class="text-center text-sm text-gray-500 dark:text-gray-400 mt-6">
+            Don't have an account?
+            <a href="{% url 'users:register' %}" class="text-blue-600 dark:text-blue-400 hover:underline font-medium">Register</a>
+        </p>
+    </div>
+</div>
+{% endblock %}

@@ -18,9 +18,13 @@ class TransactionForm(forms.ModelForm):
         }
 
     def __init__(self, *args, **kwargs):
+        user = kwargs.pop('user', None)
         super().__init__(*args, **kwargs)
-        self.fields['category'].queryset = Category.objects.all()
         self.fields['category'].required = False
+        if user:
+            self.fields['category'].queryset = Category.objects.filter(user=user)
+        else:
+            self.fields['category'].queryset = Category.objects.none()
         self.fields['amount'].validators.append(MinValueValidator(0.01))
 
     def clean_amount(self):
@@ -45,9 +49,12 @@ class CategoryForm(forms.ModelForm):
         error_messages = {
             'name': {
                 'required': 'Category name is required.',
-                'unique': 'This category already exists.',
             },
         }
+
+    def __init__(self, *args, **kwargs):
+        self.user = kwargs.pop('user', None)
+        super().__init__(*args, **kwargs)
 
     def clean_name(self):
         name = self.cleaned_data.get('name', '').strip()
@@ -55,4 +62,6 @@ class CategoryForm(forms.ModelForm):
             raise forms.ValidationError('Category name is required.')
         if len(name) < 2:
             raise forms.ValidationError('Name must be at least 2 characters.')
+        if self.user and Category.objects.filter(name=name, user=self.user).exists():
+            raise forms.ValidationError('You already have a category with this name.')
         return name

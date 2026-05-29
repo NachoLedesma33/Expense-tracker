@@ -1,12 +1,20 @@
 from django.db import models
+from django.conf import settings
 
 
 class Category(models.Model):
-    name = models.CharField(max_length=100, unique=True)
+    name = models.CharField(max_length=100)
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL, on_delete=models.CASCADE,
+        related_name='categories'
+    )
 
     class Meta:
         verbose_name_plural = 'categories'
         ordering = ['name']
+        constraints = [
+            models.UniqueConstraint(fields=['name', 'user'], name='unique_category_per_user')
+        ]
 
     def __str__(self):
         return self.name
@@ -23,6 +31,10 @@ class Transaction(models.Model):
     type = models.CharField(max_length=10, choices=TYPE_CHOICES)
     category = models.ForeignKey(
         Category, on_delete=models.SET_NULL, null=True, blank=True,
+        related_name='transactions'
+    )
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL, on_delete=models.CASCADE,
         related_name='transactions'
     )
     date = models.DateField()

@@ -4,3 +4,4 @@ django-browser-reload==1.21.0
 pillow==12.2.0
 python-dotenv==1.2.2
 pytailwindcss==0.3.0
+psycopg2-binary==2.9.12
