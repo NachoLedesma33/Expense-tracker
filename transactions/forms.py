@@ -1,4 +1,5 @@
 from django import forms
+from django.core.validators import MinValueValidator
 from .models import Transaction, Category
 
 
@@ -9,14 +10,49 @@ class TransactionForm(forms.ModelForm):
         widgets = {
             'date': forms.DateInput(attrs={'type': 'date'}),
         }
+        error_messages = {
+            'title': {'required': 'Title is required.'},
+            'amount': {'required': 'Amount is required.', 'invalid': 'Enter a valid number.'},
+            'type': {'required': 'Select a transaction type.'},
+            'date': {'required': 'Select a date.'},
+        }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields['category'].queryset = Category.objects.all()
         self.fields['category'].required = False
+        self.fields['amount'].validators.append(MinValueValidator(0.01))
+
+    def clean_amount(self):
+        amount = self.cleaned_data.get('amount')
+        if amount and amount <= 0:
+            raise forms.ValidationError('Amount must be greater than zero.')
+        return amount
+
+    def clean_title(self):
+        title = self.cleaned_data.get('title', '').strip()
+        if not title:
+            raise forms.ValidationError('Title is required.')
+        if len(title) < 2:
+            raise forms.ValidationError('Title must be at least 2 characters.')
+        return title
 
 
 class CategoryForm(forms.ModelForm):
     class Meta:
         model = Category
         fields = ['name']
+        error_messages = {
+            'name': {
+                'required': 'Category name is required.',
+                'unique': 'This category already exists.',
+            },
+        }
+
+    def clean_name(self):
+        name = self.cleaned_data.get('name', '').strip()
+        if not name:
+            raise forms.ValidationError('Category name is required.')
+        if len(name) < 2:
+            raise forms.ValidationError('Name must be at least 2 characters.')
+        return name

@@ -1,9 +1,9 @@
 <div class="p-6">
     <div class="flex items-center justify-between mb-6">
-        <h3 class="text-lg font-semibold text-gray-800">
+        <h3 class="text-lg font-semibold">
             {% if form.instance.pk %}Edit Transaction{% else %}Add Transaction{% endif %}
         </h3>
-        <button onclick="document.getElementById('transaction-modal').classList.add('hidden')" class="text-gray-400 hover:text-gray-600">
+        <button type="button" onclick="document.getElementById('transaction-modal').classList.add('hidden')" class="p-1 rounded-lg text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-all">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
             </svg>
@@ -12,32 +12,52 @@
     <form
         hx-post="{% if form.instance.pk %}{% url 'transactions:update' form.instance.pk %}{% else %}{% url 'transactions:create' %}{% endif %}"
         hx-target="#modal-content"
-        class="space-y-4"
-        _="on htmx:afterRequest if event.detail.xhr.status == 201 or event.detail.xhr.status == 200 trigger closeModal"
+        novalidate
+        class="space-y-5"
     >
         {% csrf_token %}
         <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1">Title</label>
-            <input type="text" name="title" value="{{ form.title.value|default:'' }}" placeholder="e.g. Groceries" class="w-full px-4 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-            {% if form.title.errors %}<p class="text-red-500 text-xs mt-1">{{ form.title.errors.0 }}</p>{% endif %}
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">Title</label>
+            <input type="text" name="title" value="{{ form.title.value|default:'' }}" placeholder="e.g. Groceries"
+                required
+                class="w-full px-4 py-2.5 rounded-xl border {% if form.title.errors %}border-red-400 dark:border-red-500{% else %}border-gray-200 dark:border-white/10{% endif %} bg-white dark:bg-gray-900 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 transition-all"
+                {% if form.title.errors %}aria-invalid="true"{% endif %}>
+            {% if form.title.errors %}
+            <p class="text-red-500 dark:text-red-400 text-xs mt-1.5 flex items-center gap-1">
+                <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/></svg>
+                {{ form.title.errors.0 }}
+            </p>
+            {% endif %}
         </div>
         <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1">Amount</label>
-            <input type="number" name="amount" value="{{ form.amount.value|default:'' }}" step="0.01" placeholder="0.00" class="w-full px-4 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-            {% if form.amount.errors %}<p class="text-red-500 text-xs mt-1">{{ form.amount.errors.0 }}</p>{% endif %}
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">Amount</label>
+            <input type="number" name="amount" value="{{ form.amount.value|default:'' }}" step="0.01" placeholder="0.00"
+                required min="0.01"
+                class="w-full px-4 py-2.5 rounded-xl border {% if form.amount.errors %}border-red-400 dark:border-red-500{% else %}border-gray-200 dark:border-white/10{% endif %} bg-white dark:bg-gray-900 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 transition-all"
+                {% if form.amount.errors %}aria-invalid="true"{% endif %}>
+            {% if form.amount.errors %}
+            <p class="text-red-500 dark:text-red-400 text-xs mt-1.5 flex items-center gap-1">
+                <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/></svg>
+                {{ form.amount.errors.0 }}
+            </p>
+            {% endif %}
         </div>
         <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1">Type</label>
-            <select name="type" class="w-full px-4 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white">
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">Type</label>
+            <select name="type" required
+                class="w-full px-4 py-2.5 rounded-xl border {% if form.type.errors %}border-red-400 dark:border-red-500{% else %}border-gray-200 dark:border-white/10{% endif %} bg-white dark:bg-gray-900 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 transition-all">
                 <option value="income" {% if form.type.value == 'income' %}selected{% endif %}>Income</option>
                 <option value="expense" {% if form.type.value == 'expense' %}selected{% endif %}>Expense</option>
             </select>
-            {% if form.type.errors %}<p class="text-red-500 text-xs mt-1">{{ form.type.errors.0 }}</p>{% endif %}
+            {% if form.type.errors %}
+            <p class="text-red-500 dark:text-red-400 text-xs mt-1.5">{{ form.type.errors.0 }}</p>
+            {% endif %}
         </div>
         <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1">Category</label>
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">Category</label>
             <div class="flex gap-2">
-                <select name="category" class="flex-1 px-4 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white">
+                <select name="category"
+                    class="flex-1 px-4 py-2.5 rounded-xl border border-gray-200 dark:border-white/10 bg-white dark:bg-gray-900 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 transition-all">
                     <option value="">Uncategorized</option>
                     {% for cat in form.category.field.queryset %}
                     <option value="{{ cat.id }}" {% if form.category.value|stringformat:"s" == cat.id|stringformat:"s" %}selected{% endif %}>{{ cat.name }}</option>
@@ -46,7 +66,7 @@
                 <button type="button"
                     hx-get="{% url 'transactions:category_create' %}"
                     hx-target="#modal-content"
-                    class="px-3 py-2 border border-gray-300 rounded-lg text-gray-600 hover:bg-gray-50 transition-colors"
+                    class="px-3 py-2.5 rounded-xl border border-gray-200 dark:border-white/10 text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 transition-all"
                     onclick="document.getElementById('transaction-modal').classList.remove('hidden')"
                 >
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -54,27 +74,27 @@
                     </svg>
                 </button>
             </div>
-            {% if form.category.errors %}<p class="text-red-500 text-xs mt-1">{{ form.category.errors.0 }}</p>{% endif %}
         </div>
         <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1">Date</label>
-            <input type="date" name="date" value="{{ form.date.value|date:'Y-m-d'|default:'' }}" class="w-full px-4 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-            {% if form.date.errors %}<p class="text-red-500 text-xs mt-1">{{ form.date.errors.0 }}</p>{% endif %}
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">Date</label>
+            <input type="date" name="date" value="{{ form.date.value|date:'Y-m-d'|default:'' }}"
+                required
+                class="w-full px-4 py-2.5 rounded-xl border {% if form.date.errors %}border-red-400 dark:border-red-500{% else %}border-gray-200 dark:border-white/10{% endif %} bg-white dark:bg-gray-900 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 transition-all"
+                {% if form.date.errors %}aria-invalid="true"{% endif %}>
+            {% if form.date.errors %}
+            <p class="text-red-500 dark:text-red-400 text-xs mt-1.5 flex items-center gap-1">
+                <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/></svg>
+                {{ form.date.errors.0 }}
+            </p>
+            {% endif %}
         </div>
         <div class="flex gap-3 pt-2">
-            <button type="submit" class="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors">
+            <button type="submit" class="flex-1 px-4 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-sm font-medium transition-all duration-200 shadow-lg shadow-blue-500/20 hover:shadow-blue-600/30">
                 {% if form.instance.pk %}Update{% else %}Create{% endif %}
             </button>
-            <button type="button" onclick="document.getElementById('transaction-modal').classList.add('hidden')" class="px-4 py-2 border border-gray-300 rounded-lg text-sm text-gray-700 hover:bg-gray-50 transition-colors">
+            <button type="button" onclick="document.getElementById('transaction-modal').classList.add('hidden')" class="px-4 py-2.5 rounded-xl border border-gray-200 dark:border-white/10 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-all">
                 Cancel
             </button>
         </div>
     </form>
 </div>
-<script>
-document.querySelector('#transaction-modal form')?.addEventListener('htmx:afterRequest', function(evt) {
-    if (evt.detail.successful && (evt.detail.xhr.status === 200 || evt.detail.xhr.status === 201)) {
-        document.getElementById('transaction-modal').classList.add('hidden');
-    }
-});
-</script>

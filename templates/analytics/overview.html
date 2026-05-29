@@ -3,29 +3,29 @@
 {% block title %}Analytics - Expense Tracker{% endblock %}
 
 {% block content %}
-<main class="p-8">
+<main class="p-4 md:p-8">
     <div class="max-w-7xl mx-auto">
         <div class="mb-8">
-            <h2 class="text-2xl font-semibold text-gray-800">Analytics</h2>
-            <p class="text-gray-500 mt-1">Visualize your spending patterns</p>
+            <h2 class="text-2xl font-semibold">Analytics</h2>
+            <p class="text-gray-500 dark:text-gray-400 mt-1">Visualize your spending patterns</p>
         </div>
 
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <div class="bg-white rounded-xl border border-gray-200 p-6">
-                <h3 class="text-lg font-semibold text-gray-800 mb-4">Spending by Category</h3>
-                <p class="text-gray-500">No data available yet.</p>
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6">
+            <div class="glass dark:dark-glass rounded-2xl p-6">
+                <h3 class="text-lg font-semibold mb-4">Spending by Category</h3>
+                {% include 'includes/empty_state.html' with title="No data yet" message="Add transactions to see category breakdown." %}
             </div>
-            <div class="bg-white rounded-xl border border-gray-200 p-6">
-                <h3 class="text-lg font-semibold text-gray-800 mb-4">Income vs Expenses</h3>
-                <p class="text-gray-500">No data available yet.</p>
+            <div class="glass dark:dark-glass rounded-2xl p-6">
+                <h3 class="text-lg font-semibold mb-4">Income vs Expenses</h3>
+                {% include 'includes/empty_state.html' with title="No data yet" message="Add transactions to see comparisons." %}
             </div>
-            <div class="bg-white rounded-xl border border-gray-200 p-6">
-                <h3 class="text-lg font-semibold text-gray-800 mb-4">Monthly Trend</h3>
-                <p class="text-gray-500">No data available yet.</p>
+            <div class="glass dark:dark-glass rounded-2xl p-6">
+                <h3 class="text-lg font-semibold mb-4">Monthly Trend</h3>
+                {% include 'includes/empty_state.html' with title="No data yet" message="Add transactions to see trends." %}
             </div>
-            <div class="bg-white rounded-xl border border-gray-200 p-6">
-                <h3 class="text-lg font-semibold text-gray-800 mb-4">Top Categories</h3>
-                <p class="text-gray-500">No data available yet.</p>
+            <div class="glass dark:dark-glass rounded-2xl p-6">
+                <h3 class="text-lg font-semibold mb-4">Top Categories</h3>
+                {% include 'includes/empty_state.html' with title="No data yet" message="Add transactions to see top categories." %}
             </div>
         </div>
     </div>

@@ -8,53 +8,51 @@
 {% endblock %}
 
 {% block content %}
-<main class="p-8">
+<main class="p-4 md:p-8">
     <div class="max-w-7xl mx-auto">
         <div class="mb-8">
-            <h2 class="text-2xl font-semibold text-gray-800">Dashboard</h2>
-            <p class="text-gray-500 mt-1">Overview of your finances</p>
+            <h2 class="text-2xl font-semibold">Dashboard</h2>
+            <p class="text-gray-500 dark:text-gray-400 mt-1">Overview of your finances</p>
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8" id="dashboard-stats">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 mb-8" id="dashboard-stats">
             {% include 'core/partials/stats_cards.html' %}
         </div>
 
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-            <div class="bg-white rounded-xl border border-gray-200 p-6">
-                <h3 class="text-lg font-semibold text-gray-800 mb-4">Expenses by Category</h3>
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6 mb-8">
+            <div class="glass dark:dark-glass rounded-2xl p-6">
+                <h3 class="text-lg font-semibold mb-4">Expenses by Category</h3>
                 <canvas id="categoryChart" height="200"></canvas>
             </div>
-            <div class="bg-white rounded-xl border border-gray-200 p-6">
-                <h3 class="text-lg font-semibold text-gray-800 mb-4">Income vs Expenses</h3>
+            <div class="glass dark:dark-glass rounded-2xl p-6">
+                <h3 class="text-lg font-semibold mb-4">Income vs Expenses</h3>
                 <canvas id="monthlyChart" height="200"></canvas>
             </div>
         </div>
 
-        <div class="bg-white rounded-xl border border-gray-200">
-            <div class="px-6 py-4 border-b border-gray-200 flex items-center justify-between">
-                <h3 class="text-lg font-semibold text-gray-800">Recent Transactions</h3>
-                <a href="{% url 'transactions:list' %}" class="text-sm text-blue-600 hover:text-blue-800 font-medium">View all</a>
+        <div class="glass dark:dark-glass rounded-2xl">
+            <div class="px-6 py-4 border-b border-gray-200/50 dark:border-white/5 flex items-center justify-between">
+                <h3 class="text-lg font-semibold">Recent Transactions</h3>
+                <a href="{% url 'transactions:list' %}" class="text-sm text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 font-medium transition-colors">View all</a>
             </div>
-            <div class="divide-y divide-gray-100">
+            <div>
                 {% for t in stats.last_transactions %}
-                <div class="px-6 py-4 flex items-center justify-between">
-                    <div class="flex items-center gap-3">
-                        <div class="w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold {% if t.type == 'income' %}bg-green-100 text-green-700{% else %}bg-red-100 text-red-700{% endif %}">
+                <div class="px-6 py-4 flex items-center justify-between hover:bg-gray-50/50 dark:hover:bg-white/5 transition-colors">
+                    <div class="flex items-center gap-3 min-w-0">
+                        <div class="w-10 h-10 rounded-xl flex items-center justify-center text-sm font-bold flex-shrink-0 {% if t.type == 'income' %}bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400{% else %}bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400{% endif %}">
                             {% if t.type == 'income' %}+{% else %}-{% endif %}
                         </div>
-                        <div>
-                            <p class="text-sm font-medium text-gray-800">{{ t.title }}</p>
-                            <p class="text-xs text-gray-500">{{ t.date|date:"M d, Y" }} · {{ t.category|default:"Uncategorized" }}</p>
+                        <div class="min-w-0">
+                            <p class="text-sm font-medium truncate">{{ t.title }}</p>
+                            <p class="text-xs text-gray-500 dark:text-gray-400">{{ t.date|date:"M d, Y" }} · {{ t.category|default:"Uncategorized" }}</p>
                         </div>
                     </div>
-                    <span class="text-sm font-semibold {% if t.type == 'income' %}text-green-600{% else %}text-red-600{% endif %}">
+                    <span class="text-sm font-semibold flex-shrink-0 ml-4 {% if t.type == 'income' %}text-green-600 dark:text-green-400{% else %}text-red-600 dark:text-red-400{% endif %}">
                         {% if t.type == 'income' %}+{% else %}-{% endif %}${{ t.amount|floatformat:2 }}
                     </span>
                 </div>
                 {% empty %}
-                <div class="px-6 py-8 text-center text-gray-500">
-                    No transactions yet.
-                </div>
+                {% include 'includes/empty_state.html' with title="No transactions yet" message="Add your first transaction to see it here." %}
                 {% endfor %}
             </div>
         </div>
@@ -66,52 +64,57 @@
 <script>
 const categoryData = {{ category_chart|safe }};
 const monthlyData = {{ monthly_chart|safe }};
+const isDark = document.documentElement.classList.contains('dark');
+const textColor = isDark ? '#9ca3af' : '#6b7280';
+const gridColor = isDark ? '#1f2937' : '#f3f4f6';
 
-if (categoryData.labels.length) {
-    new Chart(document.getElementById('categoryChart'), {
-        type: 'doughnut',
-        data: {
-            labels: categoryData.labels,
-            datasets: [{
-                data: categoryData.values,
-                backgroundColor: ['#3b82f6', '#ef4444', '#10b981', '#f59e0b', '#8b5cf6', '#ec4899', '#14b8a6', '#f97316'],
-                borderWidth: 0,
-            }]
-        },
-        options: {
-            responsive: true,
-            plugins: {
-                legend: { position: 'right', labels: { boxWidth: 12, padding: 12, font: { size: 12 } } }
-            }
-        }
-    });
-} else {
-    document.getElementById('categoryChart').parentElement.innerHTML = '<p class="text-gray-500 text-sm">No expense data yet.</p>';
+function renderChart(id, config) {
+    const canvas = document.getElementById(id);
+    if (!canvas) return;
+    if (config.data.labels.length) {
+        new Chart(canvas, config);
+    } else {
+        canvas.parentElement.innerHTML = '<p class="text-gray-500 dark:text-gray-400 text-sm text-center py-8">No data available yet.</p>';
+    }
 }
 
-if (monthlyData.labels.length) {
-    new Chart(document.getElementById('monthlyChart'), {
-        type: 'bar',
-        data: {
-            labels: monthlyData.labels,
-            datasets: [
-                { label: 'Income', data: monthlyData.income, backgroundColor: '#10b981', borderRadius: 4 },
-                { label: 'Expenses', data: monthlyData.expenses, backgroundColor: '#ef4444', borderRadius: 4 },
-            ]
-        },
-        options: {
-            responsive: true,
-            scales: {
-                y: { beginAtZero: true, grid: { color: '#f3f4f6' } },
-                x: { grid: { display: false } }
-            },
-            plugins: {
-                legend: { position: 'top', labels: { boxWidth: 12, padding: 12, font: { size: 12 } } }
-            }
+renderChart('categoryChart', {
+    type: 'doughnut',
+    data: {
+        labels: categoryData.labels,
+        datasets: [{
+            data: categoryData.values,
+            backgroundColor: ['#3b82f6', '#ef4444', '#10b981', '#f59e0b', '#8b5cf6', '#ec4899', '#14b8a6', '#f97316'],
+            borderWidth: 0,
+        }]
+    },
+    options: {
+        responsive: true,
+        plugins: {
+            legend: { position: 'right', labels: { boxWidth: 12, padding: 12, font: { size: 12 }, color: textColor } }
         }
-    });
-} else {
-    document.getElementById('monthlyChart').parentElement.innerHTML = '<p class="text-gray-500 text-sm">No monthly data yet.</p>';
-}
+    }
+});
+
+renderChart('monthlyChart', {
+    type: 'bar',
+    data: {
+        labels: monthlyData.labels,
+        datasets: [
+            { label: 'Income', data: monthlyData.income, backgroundColor: '#10b981', borderRadius: 6 },
+            { label: 'Expenses', data: monthlyData.expenses, backgroundColor: '#ef4444', borderRadius: 6 },
+        ]
+    },
+    options: {
+        responsive: true,
+        scales: {
+            y: { beginAtZero: true, grid: { color: gridColor }, ticks: { color: textColor } },
+            x: { grid: { display: false }, ticks: { color: textColor } }
+        },
+        plugins: {
+            legend: { position: 'top', labels: { boxWidth: 12, padding: 12, font: { size: 12 }, color: textColor } }
+        }
+    }
+});
 </script>
 {% endblock %}

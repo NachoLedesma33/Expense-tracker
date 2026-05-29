@@ -4,33 +4,37 @@
 {% block title %}Transactions - Expense Tracker{% endblock %}
 
 {% block content %}
-<main class="p-8">
+<main class="p-4 md:p-8">
     <div class="max-w-7xl mx-auto">
-        <div class="flex items-center justify-between mb-8">
+        <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-8">
             <div>
-                <h2 class="text-2xl font-semibold text-gray-800">Transactions</h2>
-                <p class="text-gray-500 mt-1">Manage your income and expenses</p>
+                <h2 class="text-2xl font-semibold">Transactions</h2>
+                <p class="text-gray-500 dark:text-gray-400 mt-1">Manage your income and expenses</p>
             </div>
             <button
                 hx-get="{% url 'transactions:create' %}"
                 hx-target="#modal-content"
                 hx-trigger="click"
-                class="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors"
+                class="inline-flex items-center gap-2 px-4 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-sm font-medium transition-all duration-200 shadow-lg shadow-blue-500/20 hover:shadow-blue-600/30"
                 onclick="document.getElementById('transaction-modal').classList.remove('hidden')"
             >
-                + Add Transaction
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+                </svg>
+                Add Transaction
             </button>
         </div>
 
-        <div class="bg-white rounded-xl border border-gray-200">
-            <div class="p-6 border-b border-gray-200">
-                <div class="flex gap-4 flex-wrap">
+        <div class="glass dark:dark-glass rounded-2xl">
+            <div class="p-4 md:p-6 border-b border-gray-200/50 dark:border-white/5">
+                <div class="flex gap-3 flex-wrap">
                     <select
                         name="type"
                         hx-get="{% url 'transactions:list' %}"
                         hx-target="#transaction-list"
                         hx-trigger="change"
-                        class="px-4 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white"
+                        hx-indicator="#txn-loading"
+                        class="px-3 py-2 rounded-xl border border-gray-200 dark:border-white/10 bg-white dark:bg-gray-900 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 transition-colors"
                     >
                         <option value="all" {% if current_type == 'all' %}selected{% endif %}>All Types</option>
                         <option value="income" {% if current_type == 'income' %}selected{% endif %}>Income</option>
@@ -41,7 +45,8 @@
                         hx-get="{% url 'transactions:list' %}"
                         hx-target="#transaction-list"
                         hx-trigger="change"
-                        class="px-4 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white"
+                        hx-indicator="#txn-loading"
+                        class="px-3 py-2 rounded-xl border border-gray-200 dark:border-white/10 bg-white dark:bg-gray-900 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 transition-colors"
                     >
                         <option value="">All Categories</option>
                         {% for cat in categories %}
@@ -50,15 +55,18 @@
                     </select>
                 </div>
             </div>
-            <div id="transaction-list">
+            <div id="txn-loading" class="htmx-indicator">
+                {% include 'includes/loading.html' %}
+            </div>
+            <div id="transaction-list" class="htmx-transition">
                 {% include 'transactions/partials/transaction_rows.html' %}
             </div>
         </div>
     </div>
 </main>
 
-<div id="transaction-modal" class="fixed inset-0 z-50 hidden bg-black/40 flex items-center justify-center" onclick="if(event.target===this)this.classList.add('hidden')">
-    <div class="bg-white rounded-xl shadow-xl w-full max-w-lg mx-4 max-h-[90vh] overflow-y-auto" onclick="event.stopPropagation()">
+<div id="transaction-modal" class="fixed inset-0 z-50 hidden bg-black/40 dark:bg-black/60 backdrop-blur-sm flex items-center justify-center">
+    <div class="glass dark:dark-glass rounded-2xl shadow-2xl w-full max-w-lg mx-4 max-h-[90vh] overflow-y-auto" onclick="event.stopPropagation()">
         <div id="modal-content"></div>
     </div>
 </div>
@@ -68,14 +76,11 @@
 <script>
 document.addEventListener('htmx:afterRequest', function(evt) {
     if (evt.detail.target && evt.detail.target.id === 'modal-content') {
-        if (evt.detail.successful && evt.detail.xhr.status === 201) {
-            document.getElementById('transaction-modal').classList.add('hidden');
+        if (evt.detail.successful && (evt.detail.xhr.status === 200 || evt.detail.xhr.status === 201)) {
+            if (!evt.detail.xhr.response) {
+                document.getElementById('transaction-modal')?.classList.add('hidden');
+            }
         }
-    }
-});
-document.body.addEventListener('htmx:beforeSwap', function(evt) {
-    if (evt.detail.target && evt.detail.target.id === 'modal-content' && !evt.detail.xhr.response) {
-        document.getElementById('transaction-modal').classList.add('hidden');
     }
 });
 </script>
