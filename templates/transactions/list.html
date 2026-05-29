@@ -1,0 +1,82 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Transactions - Expense Tracker{% endblock %}
+
+{% block content %}
+<main class="p-8">
+    <div class="max-w-7xl mx-auto">
+        <div class="flex items-center justify-between mb-8">
+            <div>
+                <h2 class="text-2xl font-semibold text-gray-800">Transactions</h2>
+                <p class="text-gray-500 mt-1">Manage your income and expenses</p>
+            </div>
+            <button
+                hx-get="{% url 'transactions:create' %}"
+                hx-target="#modal-content"
+                hx-trigger="click"
+                class="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors"
+                onclick="document.getElementById('transaction-modal').classList.remove('hidden')"
+            >
+                + Add Transaction
+            </button>
+        </div>
+
+        <div class="bg-white rounded-xl border border-gray-200">
+            <div class="p-6 border-b border-gray-200">
+                <div class="flex gap-4 flex-wrap">
+                    <select
+                        name="type"
+                        hx-get="{% url 'transactions:list' %}"
+                        hx-target="#transaction-list"
+                        hx-trigger="change"
+                        class="px-4 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white"
+                    >
+                        <option value="all" {% if current_type == 'all' %}selected{% endif %}>All Types</option>
+                        <option value="income" {% if current_type == 'income' %}selected{% endif %}>Income</option>
+                        <option value="expense" {% if current_type == 'expense' %}selected{% endif %}>Expense</option>
+                    </select>
+                    <select
+                        name="category"
+                        hx-get="{% url 'transactions:list' %}"
+                        hx-target="#transaction-list"
+                        hx-trigger="change"
+                        class="px-4 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white"
+                    >
+                        <option value="">All Categories</option>
+                        {% for cat in categories %}
+                        <option value="{{ cat.id }}" {% if current_category|stringformat:"s" == cat.id|stringformat:"s" %}selected{% endif %}>{{ cat.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+            <div id="transaction-list">
+                {% include 'transactions/partials/transaction_rows.html' %}
+            </div>
+        </div>
+    </div>
+</main>
+
+<div id="transaction-modal" class="fixed inset-0 z-50 hidden bg-black/40 flex items-center justify-center" onclick="if(event.target===this)this.classList.add('hidden')">
+    <div class="bg-white rounded-xl shadow-xl w-full max-w-lg mx-4 max-h-[90vh] overflow-y-auto" onclick="event.stopPropagation()">
+        <div id="modal-content"></div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_body %}
+<script>
+document.addEventListener('htmx:afterRequest', function(evt) {
+    if (evt.detail.target && evt.detail.target.id === 'modal-content') {
+        if (evt.detail.successful && evt.detail.xhr.status === 201) {
+            document.getElementById('transaction-modal').classList.add('hidden');
+        }
+    }
+});
+document.body.addEventListener('htmx:beforeSwap', function(evt) {
+    if (evt.detail.target && evt.detail.target.id === 'modal-content' && !evt.detail.xhr.response) {
+        document.getElementById('transaction-modal').classList.add('hidden');
+    }
+});
+</script>
+{% endblock %}

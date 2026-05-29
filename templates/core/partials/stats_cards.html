@@ -1,0 +1,18 @@
+<div class="bg-white rounded-xl p-6 border border-gray-200">
+    <p class="text-sm font-medium text-gray-500">Total Balance</p>
+    <p class="text-2xl font-bold mt-2 {% if stats.balance >= 0 %}text-gray-800{% else %}text-red-600{% endif %}">
+        ${{ stats.balance|floatformat:2 }}
+    </p>
+</div>
+<div class="bg-white rounded-xl p-6 border border-gray-200">
+    <p class="text-sm font-medium text-gray-500">Income</p>
+    <p class="text-2xl font-bold text-green-600 mt-2">+${{ stats.income|floatformat:2 }}</p>
+</div>
+<div class="bg-white rounded-xl p-6 border border-gray-200">
+    <p class="text-sm font-medium text-gray-500">Expenses</p>
+    <p class="text-2xl font-bold text-red-600 mt-2">-${{ stats.expenses|floatformat:2 }}</p>
+</div>
+<div class="bg-white rounded-xl p-6 border border-gray-200">
+    <p class="text-sm font-medium text-gray-500">Transactions</p>
+    <p class="text-2xl font-bold text-gray-800 mt-2">{{ stats.count }}</p>
+</div>

@@ -1,0 +1,6 @@
+django==5.0.14
+django-tailwind==4.4.2
+django-browser-reload==1.21.0
+pillow==12.2.0
+python-dotenv==1.2.2
+pytailwindcss==0.3.0
