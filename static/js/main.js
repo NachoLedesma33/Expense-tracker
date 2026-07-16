@@ -27,6 +27,7 @@
     if (btn) {
       e.preventDefault();
       var catId = btn.getAttribute('data-category-id');
+      var textInput = document.querySelector('[name="title"]');
       var select = document.getElementById('id_category');
       if (select && catId) {
         for (var i = 0; i < select.options.length; i++) {
@@ -38,6 +39,13 @@
       }
       var el = document.getElementById('suggested-category');
       if (el) el.innerHTML = '';
+      if (catId && textInput && textInput.value.trim().length >= 2) {
+        fetch('/transactions/learn-category/', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json', 'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]')?.value},
+          body: JSON.stringify({text: textInput.value.trim(), category_id: parseInt(catId, 10)})
+        }).catch(function() {});
+      }
     }
   });
 })();

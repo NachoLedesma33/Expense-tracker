@@ -1,5 +1,6 @@
 from datetime import date, timedelta
 from django.db.models import Sum, Count
+from django.urls import reverse
 from transactions.models import Transaction
 
 
@@ -132,7 +133,7 @@ def generate_recommendations(user) -> list[dict]:
                        f"<strong>{top_cat['category__name'] or 'Uncategorized'}</strong> "
                        f"(${float(top_cat['total']):.2f} this month)",
             'action': 'Set Budget',
-            'url': '#',
+            'url': reverse('transactions:budget_list'),
         })
 
     small_txns = this_month.filter(type='expense', amount__lt=5).count()
