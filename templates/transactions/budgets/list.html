@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-{% load static %}
+{% load static currency_filters %}
 
 {% block title %}Budgets - Expense Tracker{% endblock %}
 
@@ -26,12 +26,12 @@
                     <div>
                         <h3 class="font-semibold">{{ b.budget.category.name }}</h3>
                         <p class="text-xs text-gray-500 dark:text-gray-400">
-                            ${{ b.spent|floatformat:2 }} of ${{ b.budget.amount|floatformat:2 }}
+                            {{ b.spent|floatformat:2|currency:user }} of {{ b.budget.amount|floatformat:2|currency:user }}
                         </p>
                     </div>
                     <div class="flex items-center gap-3">
                         <span class="text-sm font-semibold {% if b.remaining >= 0 %}text-green-600 dark:text-green-400{% else %}text-red-600 dark:text-red-400{% endif %}">
-                            {% if b.remaining >= 0 %}${{ b.remaining|floatformat:2 }} left{% else %}${{ b.remaining|floatformat:2|cut:"-" }} over{% endif %}
+                            {% if b.remaining >= 0 %}{{ b.remaining|floatformat:2|currency:user }} left{% else %}{{ b.remaining|floatformat:2|cut:"-"|currency:user }} over{% endif %}
                         </span>
                         <form hx-post="{% url 'transactions:budget_delete' b.budget.pk %}"
                               hx-confirm="Delete this budget?"
@@ -70,7 +70,7 @@
                 <div class="glass dark:dark-glass rounded-2xl p-4">
                     <h4 class="font-medium text-sm">{{ s.category_name }}</h4>
                     <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                        Avg: ${{ s.avg|floatformat:2 }} · Suggested: <strong>${{ s.suggested|floatformat:2 }}</strong>
+                        Avg: {{ s.avg|floatformat:2|currency:user }} · Suggested: <strong>{{ s.suggested|floatformat:2|currency:user }}</strong>
                     </p>
                     <div class="flex items-center gap-2 mt-2">
                         <span class="text-xs px-2 py-0.5 rounded-full {% if s.confidence == 'high' %}bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300{% else %}bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-300{% endif %}">

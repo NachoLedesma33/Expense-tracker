@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-{% load static %}
+{% load static currency_filters %}
 
 {% block title %}Analytics - Expense Tracker{% endblock %}
 
@@ -19,20 +19,20 @@
             <div class="glass dark:dark-glass rounded-2xl p-6">
                 <p class="text-sm font-medium text-gray-500 dark:text-gray-400">Total Balance</p>
                 <p class="text-2xl font-bold mt-2 {% if data.balance >= 0 %}text-gray-900 dark:text-gray-100{% else %}text-red-600 dark:text-red-400{% endif %}">
-                    ${{ data.balance|floatformat:2 }}
+                    {{ data.balance|floatformat:2|currency:user }}
                 </p>
             </div>
             <div class="glass dark:dark-glass rounded-2xl p-6">
                 <p class="text-sm font-medium text-gray-500 dark:text-gray-400">Total Income</p>
-                <p class="text-2xl font-bold text-green-600 dark:text-green-400 mt-2">+${{ data.income|floatformat:2 }}</p>
+                <p class="text-2xl font-bold text-green-600 dark:text-green-400 mt-2">+{{ data.income|floatformat:2|currency:user }}</p>
             </div>
             <div class="glass dark:dark-glass rounded-2xl p-6">
                 <p class="text-sm font-medium text-gray-500 dark:text-gray-400">Total Expenses</p>
-                <p class="text-2xl font-bold text-red-600 dark:text-red-400 mt-2">-${{ data.expenses|floatformat:2 }}</p>
+                <p class="text-2xl font-bold text-red-600 dark:text-red-400 mt-2">-{{ data.expenses|floatformat:2|currency:user }}</p>
             </div>
             <div class="glass dark:dark-glass rounded-2xl p-6">
                 <p class="text-sm font-medium text-gray-500 dark:text-gray-400">Avg Monthly Expense</p>
-                <p class="text-2xl font-bold text-gray-900 dark:text-gray-100 mt-2">${{ data.avg_monthly_expense|floatformat:2 }}</p>
+                <p class="text-2xl font-bold text-gray-900 dark:text-gray-100 mt-2">{{ data.avg_monthly_expense|floatformat:2|currency:user }}</p>
             </div>
         </div>
 
@@ -51,17 +51,17 @@
                 <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
                     <div>
                         <p class="text-xs text-gray-500 dark:text-gray-400">Spent So Far</p>
-                        <p class="text-xl font-bold text-gray-900 dark:text-gray-100">${{ prediction.current_total|floatformat:2 }}</p>
+                        <p class="text-xl font-bold text-gray-900 dark:text-gray-100">{{ prediction.current_total|floatformat:2|currency:user }}</p>
                     </div>
                     <div>
                         <p class="text-xs text-gray-500 dark:text-gray-400">Projected</p>
                         <p class="text-xl font-bold {% if prediction.projected_total > data.income %}text-red-600 dark:text-red-400{% else %}text-gray-900 dark:text-gray-100{% endif %}">
-                            ${{ prediction.projected_total|floatformat:2 }}
+                            {{ prediction.projected_total|floatformat:2|currency:user }}
                         </p>
                     </div>
                     <div>
                         <p class="text-xs text-gray-500 dark:text-gray-400">Daily Avg</p>
-                        <p class="text-xl font-bold text-gray-900 dark:text-gray-100">${{ prediction.daily_average|floatformat:2 }}</p>
+                        <p class="text-xl font-bold text-gray-900 dark:text-gray-100">{{ prediction.daily_average|floatformat:2|currency:user }}</p>
                     </div>
                     <div>
                         <p class="text-xs text-gray-500 dark:text-gray-400">Days Remaining</p>
@@ -162,7 +162,7 @@
                     {% for cat in data.top_expense_cats %}
                     <div class="px-6 py-4 flex items-center justify-between">
                         <span class="text-sm font-medium">{{ cat.category__name|default:"Uncategorized" }}</span>
-                        <span class="text-sm font-semibold text-red-600 dark:text-red-400">${{ cat.total|floatformat:2 }}</span>
+                        <span class="text-sm font-semibold text-red-600 dark:text-red-400">{{ cat.total|floatformat:2|currency:user }}</span>
                     </div>
                     {% empty %}
                     <div class="px-6 py-8">
@@ -183,7 +183,7 @@
                             <p class="text-xs text-gray-500 dark:text-gray-400">{{ t.date|date:"M d, Y" }} · {{ t.category|default:"Uncategorized" }}</p>
                         </div>
                         <span class="text-sm font-semibold flex-shrink-0 ml-4 {% if t.type == 'income' %}text-green-600 dark:text-green-400{% else %}text-red-600 dark:text-red-400{% endif %}">
-                            {% if t.type == 'income' %}+{% else %}-{% endif %}${{ t.amount|floatformat:2 }}
+                            {% if t.type == 'income' %}+{% else %}-{% endif %}{{ t.amount|floatformat:2|currency:user }}
                         </span>
                     </div>
                     {% empty %}

@@ -88,7 +88,7 @@ def generate_insights(user) -> list[dict]:
             'severity': 'info',
         })
 
-    uncategorized = qs.filter(category__isnull=True).count()
+    uncategorized = this_month.filter(category__isnull=True).count()
     if uncategorized > 3:
         insights.append({
             'type': 'uncategorized',

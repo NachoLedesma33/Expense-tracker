@@ -3,7 +3,7 @@
         <div>
             <h3 class="font-semibold">{{ b.category.name }}</h3>
             <p class="text-xs text-gray-500 dark:text-gray-400">
-                $0.00 of ${{ b.amount|floatformat:2 }}
+                {{ 0|floatformat:2|currency:user }} of {{ b.amount|floatformat:2|currency:user }}
             </p>
         </div>
         <form hx-post="{% url 'transactions:budget_delete' b.pk %}"

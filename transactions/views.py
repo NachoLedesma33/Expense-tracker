@@ -66,9 +66,6 @@ class TransactionListView(LoginRequiredMixin, ListView):
                     'transactions': context['object_list'],
                 }, request=request)
                 return HttpResponse(html)
-            elif target == 'filter-count':
-                count = self.get_queryset().count()
-                return HttpResponse(f'{count} transaction{"s" if count != 1 else ""}')
         return super().get(request, *args, **kwargs)
 
 

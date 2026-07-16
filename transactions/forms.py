@@ -62,7 +62,7 @@ class CategoryForm(forms.ModelForm):
             raise forms.ValidationError('Category name is required.')
         if len(name) < 2:
             raise forms.ValidationError('Name must be at least 2 characters.')
-        if self.user and Category.objects.filter(name=name, user=self.user).exists():
+        if self.user and Category.objects.filter(name__iexact=name, user=self.user).exists():
             raise forms.ValidationError('You already have a category with this name.')
         return name
 
