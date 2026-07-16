@@ -26,8 +26,8 @@
                 </svg>
             </button>
             <form hx-post="{% url 'transactions:delete' t.id %}"
-                  hx-target="#transaction-{{ t.id }}"
-                  hx-swap="outerHTML swap:0.3s"
+                  hx-target="closest div"
+                  hx-swap="delete"
                   hx-confirm="Delete this transaction?"
                   class="inline">
                 {% csrf_token %}

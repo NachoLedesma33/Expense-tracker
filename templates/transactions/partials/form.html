@@ -11,7 +11,8 @@
     </div>
     <form
         hx-post="{% if form.instance.pk %}{% url 'transactions:update' form.instance.pk %}{% else %}{% url 'transactions:create' %}{% endif %}"
-        hx-target="#modal-content"
+        hx-target="#transaction-list"
+        hx-swap="afterbegin"
         novalidate
         class="space-y-5"
     >

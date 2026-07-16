@@ -137,5 +137,13 @@ document.addEventListener('category-created', function() {
     htmx.ajax('GET', '{% url "transactions:create" %}', {target: '#modal-content', swap: 'innerHTML'});
     setTimeout(function() { modal?.classList.remove('hidden'); }, 100);
 });
+
+document.addEventListener('transaction-created', function() {
+    document.getElementById('transaction-modal')?.classList.add('hidden');
+});
+
+document.addEventListener('transaction-updated', function() {
+    document.getElementById('transaction-modal')?.classList.add('hidden');
+});
 </script>
 {% endblock %}

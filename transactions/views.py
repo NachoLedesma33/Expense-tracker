@@ -93,7 +93,11 @@ class TransactionCreateView(LoginRequiredMixin, CreateView):
             html = render_to_string('transactions/partials/transaction_row.html', {
                 't': self.object,
             }, request=self.request)
-            return HttpResponse(html, status=201)
+            response = HttpResponse(html, status=201)
+            response['HX-Retarget'] = '#transaction-list'
+            response['HX-Reswap'] = 'afterbegin'
+            response['HX-Trigger'] = 'transaction-created'
+            return response
         return super().form_valid(form)
 
     def get_success_url(self):
@@ -132,7 +136,11 @@ class TransactionUpdateView(LoginRequiredMixin, UpdateView):
             html = render_to_string('transactions/partials/transaction_row.html', {
                 't': self.object,
             }, request=self.request)
-            return HttpResponse(html)
+            response = HttpResponse(html)
+            response['HX-Retarget'] = f'#transaction-{self.object.pk}'
+            response['HX-Reswap'] = 'outerHTML'
+            response['HX-Trigger'] = 'transaction-updated'
+            return response
         return super().form_valid(form)
 
     def form_invalid(self, form):
@@ -140,7 +148,9 @@ class TransactionUpdateView(LoginRequiredMixin, UpdateView):
             html = render_to_string('transactions/partials/form.html', {
                 'form': form,
             }, request=self.request)
-            return HttpResponse(html, status=422)
+            response = HttpResponse(html, status=422)
+            response['HX-Retarget'] = '#modal-content'
+            return response
         return super().form_invalid(form)
 
 
@@ -195,10 +205,12 @@ class CategoryCreateView(LoginRequiredMixin, CreateView):
 
     def form_invalid(self, form):
         if self.request.headers.get('HX-Request'):
-            html = render_to_string('transactions/partials/category_form.html', {
-                'category_form': form,
+            html = render_to_string('transactions/partials/form.html', {
+                'form': form,
             }, request=self.request)
-            return HttpResponse(html, status=422)
+            response = HttpResponse(html, status=422)
+            response['HX-Retarget'] = '#modal-content'
+            return response
         return super().form_invalid(form)
 
 
