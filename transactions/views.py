@@ -1,14 +1,16 @@
 import json
 import csv
+from datetime import date
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.urls import reverse_lazy
-from django.views.generic import ListView, CreateView, UpdateView, DeleteView, View
+from django.views.generic import ListView, CreateView, UpdateView, DeleteView, View, TemplateView
 from django.http import HttpResponse, JsonResponse
 from django.template.loader import render_to_string
 from django.contrib import messages
-from .models import Transaction, Category
-from .forms import TransactionForm, CategoryForm
+from .models import Transaction, Category, Budget
+from .forms import TransactionForm, CategoryForm, BudgetForm
 from services import get_filtered_transactions, export_transactions_csv, predict_category, learn_from_correction
+from services.budgets import suggest_budgets, get_budgets_with_spending
 
 
 class TransactionListView(LoginRequiredMixin, ListView):
@@ -248,3 +250,70 @@ class LearnCategoryView(LoginRequiredMixin, View):
             return JsonResponse({'status': 'skip', 'reason': 'missing_fields'}, status=400)
         except (json.JSONDecodeError, ValueError):
             return JsonResponse({'status': 'error', 'reason': 'invalid_data'}, status=400)
+
+
+class BudgetListView(LoginRequiredMixin, TemplateView):
+    template_name = 'transactions/budgets/list.html'
+
+    def get_context_data(self, **kwargs):
+        ctx = super().get_context_data(**kwargs)
+        today = date.today()
+        month = today.replace(day=1)
+        ctx['month'] = month
+        ctx['budgets'] = get_budgets_with_spending(self.request.user, month)
+        ctx['suggestions'] = suggest_budgets(self.request.user, month)
+        ctx['categories'] = Category.objects.filter(user=self.request.user)
+        ctx['form'] = BudgetForm(user=self.request.user, initial={
+            'month': month,
+        })
+        return ctx
+
+
+class BudgetCreateView(LoginRequiredMixin, CreateView):
+    model = Budget
+    form_class = BudgetForm
+    template_name = 'transactions/partials/budget_form.html'
+    success_url = reverse_lazy('transactions:budget_list')
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs['user'] = self.request.user
+        return kwargs
+
+    def form_valid(self, form):
+        self.object = form.save(commit=False)
+        self.object.user = self.request.user
+        self.object.save()
+        messages.success(self.request, 'Budget created.')
+        if self.request.headers.get('HX-Request'):
+            response = HttpResponse()
+            response['HX-Redirect'] = self.get_success_url()
+            return response
+        return super().form_valid(form)
+
+    def form_invalid(self, form):
+        if self.request.headers.get('HX-Request'):
+            html = render_to_string('transactions/partials/budget_form.html', {
+                'form': form,
+            }, request=self.request)
+            return HttpResponse(html, status=422)
+        return super().form_invalid(form)
+
+
+class BudgetDeleteView(LoginRequiredMixin, DeleteView):
+    model = Budget
+    pk_url_kwarg = 'pk'
+
+    def get_queryset(self):
+        return Budget.objects.filter(user=self.request.user)
+
+    def get_success_url(self):
+        return reverse_lazy('transactions:budget_list')
+
+    def delete(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        self.object.delete()
+        messages.success(request, 'Budget deleted.')
+        if request.headers.get('HX-Request'):
+            return HttpResponse(status=200)
+        return super().delete(request, *args, **kwargs)

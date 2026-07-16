@@ -2,6 +2,32 @@ from django.db import models
 from django.conf import settings
 
 
+class Budget(models.Model):
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL, on_delete=models.CASCADE,
+        related_name='budgets',
+    )
+    category = models.ForeignKey(
+        'Category', on_delete=models.CASCADE,
+        related_name='budgets',
+    )
+    amount = models.DecimalField(max_digits=12, decimal_places=2)
+    month = models.DateField()
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=['user', 'category', 'month'],
+                name='unique_budget_per_month',
+            )
+        ]
+        ordering = ['category__name']
+
+    def __str__(self):
+        return f'{self.category.name}: ${self.amount} ({self.month.strftime("%b %Y")})'
+
+
 class Category(models.Model):
     name = models.CharField(max_length=100)
     user = models.ForeignKey(

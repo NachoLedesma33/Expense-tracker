@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Category, Transaction
+from .models import Category, Transaction, Budget
 
 
 @admin.register(Category)
@@ -15,3 +15,9 @@ class TransactionAdmin(admin.ModelAdmin):
     list_filter = ['type', 'user', 'category', 'date']
     search_fields = ['title']
     date_hierarchy = 'date'
+
+
+@admin.register(Budget)
+class BudgetAdmin(admin.ModelAdmin):
+    list_display = ['category', 'user', 'amount', 'month']
+    list_filter = ['user', 'month']

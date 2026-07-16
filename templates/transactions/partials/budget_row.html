@@ -1,0 +1,21 @@
+<div class="glass dark:dark-glass rounded-2xl p-5">
+    <div class="flex items-center justify-between mb-3">
+        <div>
+            <h3 class="font-semibold">{{ b.category.name }}</h3>
+            <p class="text-xs text-gray-500 dark:text-gray-400">
+                $0.00 of ${{ b.amount|floatformat:2 }}
+            </p>
+        </div>
+        <form hx-post="{% url 'transactions:budget_delete' b.pk %}"
+              hx-confirm="Delete this budget?"
+              hx-target="closest div"
+              hx-swap="delete"
+              class="inline">
+            {% csrf_token %}
+            <button type="submit" class="text-red-500 hover:text-red-700 text-sm">Delete</button>
+        </form>
+    </div>
+    <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2.5">
+        <div class="h-2.5 rounded-full bg-blue-600" style="width: 0%"></div>
+    </div>
+</div>

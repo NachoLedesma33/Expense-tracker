@@ -8,6 +8,9 @@ from .views import (
     TransactionExportView,
     PredictCategoryView,
     LearnCategoryView,
+    BudgetListView,
+    BudgetCreateView,
+    BudgetDeleteView,
 )
 
 app_name = 'transactions'
@@ -21,4 +24,7 @@ urlpatterns = [
     path('export/', TransactionExportView.as_view(), name='export'),
     path('predict-category/', PredictCategoryView.as_view(), name='predict_category'),
     path('learn-category/', LearnCategoryView.as_view(), name='learn_category'),
+    path('budgets/', BudgetListView.as_view(), name='budget_list'),
+    path('budgets/create/', BudgetCreateView.as_view(), name='budget_create'),
+    path('budgets/<int:pk>/delete/', BudgetDeleteView.as_view(), name='budget_delete'),
 ]
