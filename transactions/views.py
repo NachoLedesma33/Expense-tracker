@@ -27,7 +27,6 @@ class TransactionListView(LoginRequiredMixin, ListView):
             date_from=self.request.GET.get('date_from', ''),
             date_to=self.request.GET.get('date_to', ''),
             search=self.request.GET.get('search', ''),
-            categories=self.request.GET.getlist('categories'),
         )
 
     def get_context_data(self, **kwargs):
@@ -40,7 +39,6 @@ class TransactionListView(LoginRequiredMixin, ListView):
         ctx['current_date_from'] = self.request.GET.get('date_from', '')
         ctx['current_date_to'] = self.request.GET.get('date_to', '')
         ctx['current_search'] = self.request.GET.get('search', '')
-        ctx['selected_categories'] = self.request.GET.getlist('categories')
         return ctx
 
     def get(self, request, *args, **kwargs):

@@ -58,15 +58,12 @@ def get_monthly_income_vs_expenses(user, months=6):
 
 
 def get_filtered_transactions(user, type_filter=None, category_id=None,
-                               date_from=None, date_to=None, search=None,
-                               categories=None):
+                               date_from=None, date_to=None, search=None):
     qs = Transaction.objects.filter(user=user).select_related('category')
     if type_filter and type_filter != 'all':
         qs = qs.filter(type=type_filter)
     if category_id:
         qs = qs.filter(category_id=category_id)
-    if categories:
-        qs = qs.filter(category_id__in=categories)
     if date_from:
         qs = qs.filter(date__gte=date_from)
     if date_to:

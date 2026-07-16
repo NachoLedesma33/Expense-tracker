@@ -130,16 +130,6 @@
 
 {% block extra_body %}
 <script>
-document.addEventListener('htmx:afterRequest', function(evt) {
-    if (evt.detail.target && evt.detail.target.id === 'modal-content') {
-        if (evt.detail.successful && (evt.detail.xhr.status === 200 || evt.detail.xhr.status === 201)) {
-            if (!evt.detail.xhr.response) {
-                document.getElementById('transaction-modal')?.classList.add('hidden');
-            }
-        }
-    }
-});
-
 document.addEventListener('category-created', function() {
     var modal = document.getElementById('transaction-modal');
     modal?.classList.add('hidden');
