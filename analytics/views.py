@@ -2,6 +2,7 @@ import json
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import TemplateView
 from services import get_analytics_data, generate_insights, generate_recommendations
+from services.predictor import predict_month_end
 
 
 class OverviewView(LoginRequiredMixin, TemplateView):
@@ -12,6 +13,7 @@ class OverviewView(LoginRequiredMixin, TemplateView):
         ctx['data'] = get_analytics_data(self.request.user)
         ctx['insights'] = generate_insights(self.request.user)
         ctx['recommendations'] = generate_recommendations(self.request.user)
+        ctx['prediction'] = predict_month_end(self.request.user)
         ctx['chart_json'] = {
             'category': json.dumps({
                 'labels': ctx['data']['category_labels'],
