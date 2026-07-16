@@ -50,7 +50,7 @@ class TransactionListView(LoginRequiredMixin, ListView):
                 self.object_list = self.get_queryset()
                 context = self.get_context_data()
                 page_obj = context.get('page_obj')
-                is_paginated = context.get('is_paginator')
+                is_paginated = context.get('is_paginated')
                 paginator = context.get('paginator')
                 html = render_to_string('transactions/partials/transaction_rows.html', {
                     'transactions': context['object_list'],
@@ -205,8 +205,8 @@ class CategoryCreateView(LoginRequiredMixin, CreateView):
 
     def form_invalid(self, form):
         if self.request.headers.get('HX-Request'):
-            html = render_to_string('transactions/partials/form.html', {
-                'form': form,
+            html = render_to_string('transactions/partials/category_form.html', {
+                'category_form': form,
             }, request=self.request)
             response = HttpResponse(html, status=422)
             response['HX-Retarget'] = '#modal-content'
@@ -214,7 +214,7 @@ class CategoryCreateView(LoginRequiredMixin, CreateView):
         return super().form_invalid(form)
 
 
-class TransactionExportView(LoginRequiredMixin, ListView):
+class TransactionExportView(LoginRequiredMixin, View):
     def get(self, request, *args, **kwargs):
         qs = export_transactions_csv(
             request.user,

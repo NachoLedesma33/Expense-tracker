@@ -21,7 +21,7 @@
         {% if budgets %}
         <div class="space-y-4 mb-8">
             {% for b in budgets %}
-            <div class="glass dark:dark-glass rounded-2xl p-5">
+            <div id="budget-{{ b.budget.pk }}" class="glass dark:dark-glass rounded-2xl p-5">
                 <div class="flex items-center justify-between mb-3">
                     <div>
                         <h3 class="font-semibold">{{ b.budget.category.name }}</h3>
@@ -35,7 +35,7 @@
                         </span>
                         <form hx-post="{% url 'transactions:budget_delete' b.budget.pk %}"
                               hx-confirm="Delete this budget?"
-                              hx-target="closest div"
+                              hx-target="#budget-{{ b.budget.pk }}"
                               hx-swap="delete"
                               class="inline">
                             {% csrf_token %}

@@ -82,6 +82,7 @@ class BudgetForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         user = kwargs.pop('user', None)
         super().__init__(*args, **kwargs)
+        self.fields['month'].input_formats = ['%Y-%m', '%Y-%m-%d']
         if user:
             self.fields['category'].queryset = Category.objects.filter(user=user)
         else:

@@ -26,7 +26,7 @@
                 </svg>
             </button>
             <form hx-post="{% url 'transactions:delete' t.id %}"
-                  hx-target="closest div"
+                  hx-target="#transaction-{{ t.id }}"
                   hx-swap="delete"
                   hx-confirm="Delete this transaction?"
                   class="inline">
