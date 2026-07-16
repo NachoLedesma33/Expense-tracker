@@ -166,12 +166,18 @@ class TransactionDeleteView(LoginRequiredMixin, DeleteView):
 class CategoryCreateView(LoginRequiredMixin, CreateView):
     model = Category
     form_class = CategoryForm
+    template_name = 'transactions/partials/category_form.html'
     success_url = reverse_lazy('transactions:list')
 
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
         kwargs['user'] = self.request.user
         return kwargs
+
+    def get_context_data(self, **kwargs):
+        ctx = super().get_context_data(**kwargs)
+        ctx['category_form'] = ctx.get('form')
+        return ctx
 
     def form_valid(self, form):
         self.object = form.save(commit=False)

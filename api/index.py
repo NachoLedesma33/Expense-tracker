@@ -9,6 +9,19 @@ print("[startup] HAS_DATABASE_URL:", 'DATABASE_URL' in os.environ, file=sys.stde
 print("[startup] ALLOWED_HOSTS:", os.environ.get('DJANGO_ALLOWED_HOSTS'), file=sys.stderr)
 
 try:
+    import django
+    from django.core.management import call_command
+    os.environ['DJANGO_SETTINGS_MODULE'] = 'config.settings.production'
+    django.setup()
+    print("[startup] Running migrations...", file=sys.stderr)
+    call_command('migrate', '--noinput', verbosity=0)
+    print("[startup] Migrations complete", file=sys.stderr)
+except Exception as e:
+    print(f"[startup] Migration error: {e}", file=sys.stderr)
+    import traceback
+    traceback.print_exc(file=sys.stderr)
+
+try:
     from config.wsgi import application
     handler = application
     print("[startup] Django WSGI loaded successfully", file=sys.stderr)
