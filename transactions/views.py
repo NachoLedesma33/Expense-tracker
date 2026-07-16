@@ -188,7 +188,9 @@ class CategoryCreateView(LoginRequiredMixin, CreateView):
             html = render_to_string('transactions/partials/category_option.html', {
                 'category': self.object,
             }, request=self.request)
-            return HttpResponse(html, status=201)
+            response = HttpResponse(html, status=201)
+            response['HX-Trigger'] = 'category-created'
+            return response
         return super().form_valid(form)
 
     def form_invalid(self, form):
