@@ -1,7 +1,7 @@
 import json
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import TemplateView
-from services import get_analytics_data
+from services import get_analytics_data, generate_insights, generate_recommendations
 
 
 class OverviewView(LoginRequiredMixin, TemplateView):
@@ -10,6 +10,8 @@ class OverviewView(LoginRequiredMixin, TemplateView):
     def get_context_data(self, **kwargs):
         ctx = super().get_context_data(**kwargs)
         ctx['data'] = get_analytics_data(self.request.user)
+        ctx['insights'] = generate_insights(self.request.user)
+        ctx['recommendations'] = generate_recommendations(self.request.user)
         ctx['chart_json'] = {
             'category': json.dumps({
                 'labels': ctx['data']['category_labels'],

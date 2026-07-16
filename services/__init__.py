@@ -7,3 +7,4 @@ from .transaction_service import (
     export_transactions_csv,
 )
 from .categorizer import predict_category, learn_from_correction
+from .insights import generate_insights, generate_recommendations

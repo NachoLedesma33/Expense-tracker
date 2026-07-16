@@ -36,6 +36,41 @@
             </div>
         </div>
 
+        {% if insights %}
+        <div class="mb-8">
+            <h3 class="text-lg font-semibold mb-4">Insights</h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {% for insight in insights %}
+                <div class="rounded-2xl p-4 border border-gray-200/50 dark:border-white/10
+                    {% if insight.severity == 'danger' %}bg-red-50 dark:bg-red-900/20
+                    {% elif insight.severity == 'warning' %}bg-yellow-50 dark:bg-yellow-900/20
+                    {% elif insight.severity == 'success' %}bg-green-50 dark:bg-green-900/20
+                    {% else %}bg-white/90 dark:bg-white/5{% endif %}">
+                    <h4 class="font-medium text-sm mb-1">{{ insight.title }}</h4>
+                    <p class="text-sm text-gray-600 dark:text-gray-400">{{ insight.message|safe }}</p>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+
+        {% if recommendations %}
+        <div class="mb-8">
+            <h3 class="text-lg font-semibold mb-4">Recommendations</h3>
+            <div class="space-y-3">
+                {% for rec in recommendations %}
+                <div class="glass dark:dark-glass rounded-2xl p-4 flex items-center justify-between">
+                    <p class="text-sm text-gray-700 dark:text-gray-300">{{ rec.message|safe }}</p>
+                    <a href="{{ rec.url }}"
+                       class="text-sm font-medium text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 flex-shrink-0 ml-4">
+                        {{ rec.action }} →
+                    </a>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6 mb-8">
             <div class="glass dark:dark-glass rounded-2xl p-6">
                 <div class="flex items-center justify-between mb-4">
