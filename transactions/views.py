@@ -1,13 +1,14 @@
+import json
 import csv
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.urls import reverse_lazy
-from django.views.generic import ListView, CreateView, UpdateView, DeleteView
-from django.http import HttpResponse
+from django.views.generic import ListView, CreateView, UpdateView, DeleteView, View
+from django.http import HttpResponse, JsonResponse
 from django.template.loader import render_to_string
 from django.contrib import messages
 from .models import Transaction, Category
 from .forms import TransactionForm, CategoryForm
-from services import get_filtered_transactions, export_transactions_csv
+from services import get_filtered_transactions, export_transactions_csv, predict_category, learn_from_correction
 
 
 class TransactionListView(LoginRequiredMixin, ListView):
@@ -83,6 +84,8 @@ class TransactionCreateView(LoginRequiredMixin, CreateView):
         self.object = form.save(commit=False)
         self.object.user = self.request.user
         self.object.save()
+        if self.object.category:
+            learn_from_correction(self.object.title, self.object.category_id)
         messages.success(self.request, 'Transaction created.')
         if self.request.headers.get('HX-Request'):
             html = render_to_string('transactions/partials/transaction_row.html', {
@@ -212,3 +215,36 @@ class TransactionExportView(LoginRequiredMixin, ListView):
                 t.date.isoformat(),
             ])
         return response
+
+
+class PredictCategoryView(LoginRequiredMixin, View):
+    def get(self, request):
+        text = request.GET.get('q', '').strip()
+        if len(text) < 3:
+            return HttpResponse('')
+        result = predict_category(text)
+        if result['category_id'] is None:
+            return HttpResponse('')
+        try:
+            cat = Category.objects.get(id=result['category_id'])
+            html = render_to_string('transactions/partials/predicted_category.html', {
+                'category': cat,
+                'confidence': result['confidence'],
+            }, request=request)
+            return HttpResponse(html)
+        except Category.DoesNotExist:
+            return HttpResponse('')
+
+
+class LearnCategoryView(LoginRequiredMixin, View):
+    def post(self, request):
+        try:
+            data = json.loads(request.body)
+            text = data.get('text', '').strip()
+            cat_id = data.get('category_id')
+            if text and cat_id:
+                learn_from_correction(text, int(cat_id))
+                return JsonResponse({'status': 'ok'})
+            return JsonResponse({'status': 'skip', 'reason': 'missing_fields'}, status=400)
+        except (json.JSONDecodeError, ValueError):
+            return JsonResponse({'status': 'error', 'reason': 'invalid_data'}, status=400)

@@ -6,3 +6,4 @@ from .transaction_service import (
     get_analytics_data,
     export_transactions_csv,
 )
+from .categorizer import predict_category, learn_from_correction
