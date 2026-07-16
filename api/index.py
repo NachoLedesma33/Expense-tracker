@@ -8,27 +8,9 @@ print("[startup] HAS_DJANGO_SECRET_KEY:", 'DJANGO_SECRET_KEY' in os.environ, fil
 print("[startup] HAS_DATABASE_URL:", 'DATABASE_URL' in os.environ, file=sys.stderr)
 print("[startup] ALLOWED_HOSTS:", os.environ.get('DJANGO_ALLOWED_HOSTS'), file=sys.stderr)
 
-_migrated = False
-
 try:
     from config.wsgi import application
-
-    def handler(environ, start_response):
-        global _migrated
-        if not _migrated:
-            try:
-                os.environ['DJANGO_SETTINGS_MODULE'] = 'config.settings.production'
-                import django
-                django.setup()
-                from django.core.management import call_command
-                call_command('migrate', '--noinput', verbosity=0)
-            except Exception as e:
-                print(f"[handler] Migration error: {e}", file=sys.stderr)
-                import traceback
-                traceback.print_exc(file=sys.stderr)
-            _migrated = True
-        return application(environ, start_response)
-
+    handler = application
     print("[startup] Django WSGI loaded successfully", file=sys.stderr)
 except Exception as e:
     print(f"[startup] CRASH: {e}", file=sys.stderr)
