@@ -10,7 +10,7 @@
             <p class="text-gray-500 dark:text-gray-400 mt-1">Configure your preferences</p>
         </div>
 
-        <form method="post" class="glass dark:dark-glass rounded-2xl divide-y divide-gray-200/50 dark:divide-white/5">
+        <form method="post" class="card-solid rounded-xl divide-y divide-gray-200/50 dark:divide-white/5">
             {% csrf_token %}
 
             <div class="p-6 space-y-4">
@@ -53,7 +53,7 @@
 
             <div class="p-6">
                 <div class="flex items-center gap-3">
-                    <button type="submit" class="px-6 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-sm font-medium transition-all duration-200 shadow-lg shadow-blue-500/20 hover:shadow-blue-600/30">
+                    <button type="submit" class="px-6 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-sm font-medium transition-all duration-200 shadow-lg shadow-emerald-500/20 hover:shadow-emerald-600/30">
                         Save Settings
                     </button>
                     <a href="{% url 'transactions:export' %}" class="inline-flex items-center gap-2 px-6 py-2.5 rounded-xl text-sm font-medium border border-gray-200 dark:border-white/10 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 transition-all duration-200">
