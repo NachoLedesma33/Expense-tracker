@@ -16,7 +16,7 @@
         <div>
             <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">Category</label>
             <select name="category" id="id_category" required
-                class="w-full px-4 py-2.5 rounded-xl border border-gray-200 dark:border-white/10 bg-white dark:bg-gray-900 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 transition-all">
+                class="w-full px-4 py-2.5 rounded-xl border border-gray-200 dark:border-white/10 bg-white dark:bg-gray-900 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 dark:focus:ring-emerald-400 transition-all">
                 {% for cat in form.category.field.queryset %}
                 <option value="{{ cat.id }}" {% if form.category.value|stringformat:"s" == cat.id|stringformat:"s" %}selected{% endif %}>{{ cat.name }}</option>
                 {% endfor %}
@@ -28,7 +28,7 @@
         <div>
             <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">Budget Amount</label>
             <input type="number" name="amount" id="id_amount" step="0.01" placeholder="0.00" required min="0.01"
-                class="w-full px-4 py-2.5 rounded-xl border border-gray-200 dark:border-white/10 bg-white dark:bg-gray-900 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 transition-all">
+                class="w-full px-4 py-2.5 rounded-xl border border-gray-200 dark:border-white/10 bg-white dark:bg-gray-900 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 dark:focus:ring-emerald-400 transition-all">
             {% if form.amount.errors %}
             <p class="text-red-500 dark:text-red-400 text-xs mt-1.5">{{ form.amount.errors.0 }}</p>
             {% endif %}
@@ -36,11 +36,11 @@
         <div>
             <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">Month</label>
             <input type="month" name="month" value="{{ form.month.value|date:'Y-m'|default:'' }}"
-                class="w-full px-4 py-2.5 rounded-xl border border-gray-200 dark:border-white/10 bg-white dark:bg-gray-900 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 transition-all">
+                class="w-full px-4 py-2.5 rounded-xl border border-gray-200 dark:border-white/10 bg-white dark:bg-gray-900 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 dark:focus:ring-emerald-400 transition-all">
         </div>
         <div class="flex gap-3 pt-2">
             <button type="submit"
-                class="flex-1 px-4 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-sm font-medium transition-all duration-200 shadow-lg shadow-blue-500/20">
+                class="flex-1 px-4 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-sm font-medium transition-all duration-200 shadow-lg shadow-emerald-500/20">
                 Create Budget
             </button>
             <button type="button"

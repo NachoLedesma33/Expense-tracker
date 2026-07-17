@@ -13,7 +13,7 @@
             </div>
             <button type="button"
                 onclick="document.getElementById('budget-modal').classList.remove('hidden')"
-                class="px-4 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-sm font-medium transition-all duration-200 shadow-lg shadow-blue-500/20">
+                class="px-4 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-sm font-medium transition-all duration-200 shadow-lg shadow-emerald-500/20">
                 + New Budget
             </button>
         </div>
@@ -21,7 +21,7 @@
         {% if budgets %}
         <div class="space-y-4 mb-8">
             {% for b in budgets %}
-            <div id="budget-{{ b.budget.pk }}" class="glass dark:dark-glass rounded-2xl p-5">
+            <div id="budget-{{ b.budget.pk }}" class="card-solid rounded-xl p-5">
                 <div class="flex items-center justify-between mb-3">
                     <div>
                         <h3 class="font-semibold">{{ b.budget.category.name }}</h3>
@@ -30,7 +30,7 @@
                         </p>
                     </div>
                     <div class="flex items-center gap-3">
-                        <span class="text-sm font-semibold {% if b.remaining >= 0 %}text-green-600 dark:text-green-400{% else %}text-red-600 dark:text-red-400{% endif %}">
+                        <span class="text-sm font-semibold tabular {% if b.remaining >= 0 %}text-emerald-600 dark:text-emerald-400{% else %}text-red-600 dark:text-red-400{% endif %}">
                             {% if b.remaining >= 0 %}{{ b.remaining|floatformat:2|currency:user }} left{% else %}{{ b.remaining|floatformat:2|cut:"-"|currency:user }} over{% endif %}
                         </span>
                         <form hx-post="{% url 'transactions:budget_delete' b.budget.pk %}"
@@ -47,7 +47,7 @@
                     <div class="h-2.5 rounded-full transition-all duration-300
                         {% if b.percentage > 100 %}bg-red-600
                         {% elif b.percentage > 80 %}bg-yellow-500
-                        {% else %}bg-blue-600{% endif %}"
+                        {% else %}bg-emerald-600{% endif %}"
                         style="width: {{ b.percentage|floatformat:0 }}%">
                     </div>
                 </div>
@@ -55,7 +55,7 @@
             {% endfor %}
         </div>
         {% else %}
-        <div class="glass dark:dark-glass rounded-2xl p-12 text-center mb-8">
+        <div class="card-solid rounded-xl p-12 text-center mb-8">
             <p class="text-gray-500 dark:text-gray-400 text-lg mb-2">No budgets yet</p>
             <p class="text-gray-400 dark:text-gray-500 text-sm">Create your first budget to start tracking spending limits.</p>
         </div>
@@ -67,19 +67,19 @@
             <p class="text-sm text-gray-500 dark:text-gray-400 mb-4">Based on your spending history</p>
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 {% for s in suggestions %}
-                <div class="glass dark:dark-glass rounded-2xl p-4">
+                <div class="card-solid rounded-xl p-4">
                     <h4 class="font-medium text-sm">{{ s.category_name }}</h4>
                     <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">
                         Avg: {{ s.avg|floatformat:2|currency:user }} · Suggested: <strong>{{ s.suggested|floatformat:2|currency:user }}</strong>
                     </p>
                     <div class="flex items-center gap-2 mt-2">
-                        <span class="text-xs px-2 py-0.5 rounded-full {% if s.confidence == 'high' %}bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300{% else %}bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-300{% endif %}">
+                        <span class="text-xs px-2 py-0.5 rounded-full {% if s.confidence == 'high' %}bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-300{% else %}bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-300{% endif %}">
                             {{ s.confidence }}
                         </span>
                         {% if not s.existing %}
                         <button type="button"
                             onclick="fillBudgetForm({{ s.category_id }}, {{ s.suggested }})"
-                            class="text-xs text-blue-600 dark:text-blue-400 hover:underline">
+                            class="text-xs text-emerald-600 dark:text-emerald-400 hover:underline">
                             Use suggestion
                         </button>
                         {% endif %}

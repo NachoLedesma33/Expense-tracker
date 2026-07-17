@@ -23,7 +23,7 @@
                     hx-get="{% url 'transactions:create' %}"
                     hx-target="#modal-content"
                     hx-trigger="click"
-                    class="inline-flex items-center gap-2 px-4 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-sm font-medium transition-all duration-200 shadow-lg shadow-blue-500/20 hover:shadow-blue-600/30"
+                    class="inline-flex items-center gap-2 px-4 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-sm font-medium transition-all duration-200 shadow-lg shadow-emerald-500/20 hover:shadow-emerald-600/30"
                     onclick="document.getElementById('transaction-modal').classList.remove('hidden')"
                 >
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -34,7 +34,7 @@
             </div>
         </div>
 
-        <div class="glass dark:dark-glass rounded-2xl">
+        <div class="card-solid rounded-xl">
             <div class="p-4 md:p-6 border-b border-gray-200/50 dark:border-white/5 space-y-4">
                 <div class="flex gap-3 flex-wrap items-center">
                     <select
@@ -45,7 +45,7 @@
                         hx-indicator="#txn-loading"
                         hx-include="[name='category'],[name='date_from'],[name='date_to'],[name='search']"
                         hx-push-url="true"
-                        class="px-3 py-2 rounded-xl border border-gray-200 dark:border-white/10 bg-white dark:bg-gray-900 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 transition-colors"
+                        class="px-3 py-2 rounded-xl border border-gray-200 dark:border-white/10 bg-white dark:bg-gray-900 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 dark:focus:ring-emerald-400 transition-colors"
                     >
                         <option value="all" {% if current_type == 'all' %}selected{% endif %}>All Types</option>
                         <option value="income" {% if current_type == 'income' %}selected{% endif %}>Income</option>
@@ -59,7 +59,7 @@
                         hx-indicator="#txn-loading"
                         hx-include="[name='type'],[name='date_from'],[name='date_to'],[name='search']"
                         hx-push-url="true"
-                        class="px-3 py-2 rounded-xl border border-gray-200 dark:border-white/10 bg-white dark:bg-gray-900 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 transition-colors"
+                        class="px-3 py-2 rounded-xl border border-gray-200 dark:border-white/10 bg-white dark:bg-gray-900 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 dark:focus:ring-emerald-400 transition-colors"
                     >
                         <option value="">All Categories</option>
                         {% for cat in categories %}
@@ -76,7 +76,7 @@
                         hx-indicator="#txn-loading"
                         hx-include="[name='type'],[name='category'],[name='date_to'],[name='search']"
                         hx-push-url="true"
-                        class="px-3 py-2 rounded-xl border border-gray-200 dark:border-white/10 bg-white dark:bg-gray-900 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 transition-colors"
+                        class="px-3 py-2 rounded-xl border border-gray-200 dark:border-white/10 bg-white dark:bg-gray-900 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 dark:focus:ring-emerald-400 transition-colors"
                     >
                     <span class="text-sm text-gray-400">to</span>
                     <input
@@ -89,7 +89,7 @@
                         hx-indicator="#txn-loading"
                         hx-include="[name='type'],[name='category'],[name='date_from'],[name='search']"
                         hx-push-url="true"
-                        class="px-3 py-2 rounded-xl border border-gray-200 dark:border-white/10 bg-white dark:bg-gray-900 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 transition-colors"
+                        class="px-3 py-2 rounded-xl border border-gray-200 dark:border-white/10 bg-white dark:bg-gray-900 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 dark:focus:ring-emerald-400 transition-colors"
                     >
                 </div>
                 <div class="relative">
@@ -107,7 +107,7 @@
                         hx-indicator="#txn-loading"
                         hx-include="[name='type'],[name='category'],[name='date_from'],[name='date_to']"
                         hx-push-url="true"
-                        class="w-full pl-10 pr-4 py-2.5 rounded-xl border border-gray-200 dark:border-white/10 bg-white dark:bg-gray-900 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 transition-colors"
+                        class="w-full pl-10 pr-4 py-2.5 rounded-xl border border-gray-200 dark:border-white/10 bg-white dark:bg-gray-900 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 dark:focus:ring-emerald-400 transition-colors"
                     >
                 </div>
             </div>
@@ -122,7 +122,7 @@
 </main>
 
 <div id="transaction-modal" class="fixed inset-0 z-50 hidden bg-black/40 dark:bg-black/60 backdrop-blur-sm flex items-center justify-center">
-    <div class="glass dark:dark-glass rounded-2xl shadow-2xl w-full max-w-lg mx-4 max-h-[90vh] overflow-y-auto" onclick="event.stopPropagation()">
+    <div class="card-solid rounded-xl shadow-2xl w-full max-w-lg mx-4 max-h-[90vh] overflow-y-auto" onclick="event.stopPropagation()">
         <div id="modal-content"></div>
     </div>
 </div>
