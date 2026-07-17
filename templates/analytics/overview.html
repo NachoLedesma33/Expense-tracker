@@ -16,33 +16,33 @@
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 mb-8">
-            <div class="glass dark:dark-glass rounded-2xl p-6">
+            <div class="card-solid rounded-xl p-6">
                 <p class="text-sm font-medium text-gray-500 dark:text-gray-400">Total Balance</p>
-                <p class="text-2xl font-bold mt-2 {% if data.balance >= 0 %}text-gray-900 dark:text-gray-100{% else %}text-red-600 dark:text-red-400{% endif %}">
+                <p class="text-2xl font-bold mt-2 tabular {% if data.balance >= 0 %}text-gray-900 dark:text-gray-100{% else %}text-red-600 dark:text-red-400{% endif %}">
                     {{ data.balance|floatformat:2|currency:user }}
                 </p>
             </div>
-            <div class="glass dark:dark-glass rounded-2xl p-6">
+            <div class="card-solid rounded-xl p-6">
                 <p class="text-sm font-medium text-gray-500 dark:text-gray-400">Total Income</p>
-                <p class="text-2xl font-bold text-green-600 dark:text-green-400 mt-2">+{{ data.income|floatformat:2|currency:user }}</p>
+                <p class="text-2xl font-bold text-emerald-600 dark:text-emerald-400 mt-2 tabular">+{{ data.income|floatformat:2|currency:user }}</p>
             </div>
-            <div class="glass dark:dark-glass rounded-2xl p-6">
+            <div class="card-solid rounded-xl p-6">
                 <p class="text-sm font-medium text-gray-500 dark:text-gray-400">Total Expenses</p>
-                <p class="text-2xl font-bold text-red-600 dark:text-red-400 mt-2">-{{ data.expenses|floatformat:2|currency:user }}</p>
+                <p class="text-2xl font-bold text-red-600 dark:text-red-400 mt-2 tabular">-{{ data.expenses|floatformat:2|currency:user }}</p>
             </div>
-            <div class="glass dark:dark-glass rounded-2xl p-6">
+            <div class="card-solid rounded-xl p-6">
                 <p class="text-sm font-medium text-gray-500 dark:text-gray-400">Avg Monthly Expense</p>
-                <p class="text-2xl font-bold text-gray-900 dark:text-gray-100 mt-2">{{ data.avg_monthly_expense|floatformat:2|currency:user }}</p>
+                <p class="text-2xl font-bold text-gray-900 dark:text-gray-100 mt-2 tabular">{{ data.avg_monthly_expense|floatformat:2|currency:user }}</p>
             </div>
         </div>
 
         {% if prediction %}
         <div class="mb-8">
-            <div class="glass dark:dark-glass rounded-2xl p-6">
+            <div class="card-solid rounded-xl p-6">
                 <div class="flex items-center justify-between mb-4">
                     <h3 class="text-lg font-semibold">Month-End Projection</h3>
                     <span class="text-xs px-2 py-1 rounded-full
-                        {% if prediction.confidence == 'high' %}bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300
+                        {% if prediction.confidence == 'high' %}bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-300
                         {% elif prediction.confidence == 'medium' %}bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-300
                         {% else %}bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400{% endif %}">
                         {{ prediction.confidence }}
@@ -73,7 +73,7 @@
                     <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2.5">
                         <div class="h-2.5 rounded-full
                             {% if prediction.projected_total > data.income %}bg-red-600
-                            {% else %}bg-blue-600{% endif %}"
+                            {% else %}bg-emerald-600{% endif %}"
                              style="width: {% widthratio prediction.projected_total data.income 100 %}%">
                         </div>
                     </div>
@@ -94,7 +94,7 @@
                 <div class="rounded-2xl p-4 border border-gray-200/50 dark:border-white/10
                     {% if insight.severity == 'danger' %}bg-red-50 dark:bg-red-900/20
                     {% elif insight.severity == 'warning' %}bg-yellow-50 dark:bg-yellow-900/20
-                    {% elif insight.severity == 'success' %}bg-green-50 dark:bg-green-900/20
+                    {% elif insight.severity == 'success' %}bg-emerald-50 dark:bg-emerald-900/20
                     {% else %}bg-white/90 dark:bg-white/5{% endif %}">
                     <h4 class="font-medium text-sm mb-1">{{ insight.title }}</h4>
                     <p class="text-sm text-gray-600 dark:text-gray-400">{{ insight.message|safe }}</p>
@@ -109,10 +109,10 @@
             <h3 class="text-lg font-semibold mb-4">Recommendations</h3>
             <div class="space-y-3">
                 {% for rec in recommendations %}
-                <div class="glass dark:dark-glass rounded-2xl p-4 flex items-center justify-between">
+                <div class="card-solid rounded-xl p-4 flex items-center justify-between">
                     <p class="text-sm text-gray-700 dark:text-gray-300">{{ rec.message|safe }}</p>
                     <a href="{{ rec.url }}"
-                       class="text-sm font-medium text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 flex-shrink-0 ml-4">
+                       class="text-sm font-medium text-emerald-600 dark:text-emerald-400 hover:text-emerald-700 dark:hover:text-emerald-300 flex-shrink-0 ml-4">
                         {{ rec.action }} →
                     </a>
                 </div>
@@ -122,14 +122,14 @@
         {% endif %}
 
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6 mb-8">
-            <div class="glass dark:dark-glass rounded-2xl p-6">
+            <div class="card-solid rounded-xl p-6">
                 <div class="flex items-center justify-between mb-4">
                     <h3 class="text-lg font-semibold">Expenses by Category</h3>
                     <span class="text-xs text-gray-400">{{ data.category_labels|length }} categories</span>
                 </div>
                 <canvas id="expenseCategoryChart" height="220"></canvas>
             </div>
-            <div class="glass dark:dark-glass rounded-2xl p-6">
+            <div class="card-solid rounded-xl p-6">
                 <div class="flex items-center justify-between mb-4">
                     <h3 class="text-lg font-semibold">Income by Category</h3>
                     <span class="text-xs text-gray-400">{{ data.income_cat_labels|length }} categories</span>
@@ -139,13 +139,13 @@
         </div>
 
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6 mb-8">
-            <div class="glass dark:dark-glass rounded-2xl p-6">
+            <div class="card-solid rounded-xl p-6">
                 <div class="flex items-center justify-between mb-4">
                     <h3 class="text-lg font-semibold">Monthly Income vs Expenses</h3>
                 </div>
                 <canvas id="monthlyChart" height="220"></canvas>
             </div>
-            <div class="glass dark:dark-glass rounded-2xl p-6">
+            <div class="card-solid rounded-xl p-6">
                 <div class="flex items-center justify-between mb-4">
                     <h3 class="text-lg font-semibold">Cumulative Balance</h3>
                 </div>
@@ -154,7 +154,7 @@
         </div>
 
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6">
-            <div class="glass dark:dark-glass rounded-2xl">
+            <div class="card-solid rounded-xl">
                 <div class="px-6 py-4 border-b border-gray-200/50 dark:border-white/5">
                     <h3 class="text-lg font-semibold">Top Expense Categories</h3>
                 </div>
@@ -171,7 +171,7 @@
                     {% endfor %}
                 </div>
             </div>
-            <div class="glass dark:dark-glass rounded-2xl">
+            <div class="card-solid rounded-xl">
                 <div class="px-6 py-4 border-b border-gray-200/50 dark:border-white/5">
                     <h3 class="text-lg font-semibold">Latest Transactions</h3>
                 </div>
@@ -182,7 +182,7 @@
                             <p class="text-sm font-medium truncate">{{ t.title }}</p>
                             <p class="text-xs text-gray-500 dark:text-gray-400">{{ t.date|date:"M d, Y" }} · {{ t.category|default:"Uncategorized" }}</p>
                         </div>
-                        <span class="text-sm font-semibold flex-shrink-0 ml-4 {% if t.type == 'income' %}text-green-600 dark:text-green-400{% else %}text-red-600 dark:text-red-400{% endif %}">
+                        <span class="text-sm font-semibold flex-shrink-0 ml-4 tabular {% if t.type == 'income' %}text-emerald-600 dark:text-emerald-400{% else %}text-red-600 dark:text-red-400{% endif %}">
                             {% if t.type == 'income' %}+{% else %}-{% endif %}{{ t.amount|floatformat:2|currency:user }}
                         </span>
                     </div>
@@ -205,9 +205,9 @@ const incomeCatData = {{ chart_json.income_cat|safe }};
 const monthlyData = {{ chart_json.monthly|safe }};
 const cumulativeData = {{ chart_json.cumulative|safe }};
 const isDark = document.documentElement.classList.contains('dark');
-const textColor = isDark ? '#9ca3af' : '#6b7280';
-const gridColor = isDark ? '#1f2937' : '#f3f4f6';
-const colors = ['#3b82f6', '#ef4444', '#10b981', '#f59e0b', '#8b5cf6', '#ec4899', '#14b8a6', '#f97316'];
+const textColor = isDark ? '#94a3b8' : '#64748b';
+const gridColor = isDark ? '#1e293b' : '#f1f5f9';
+const colors = ['#50C878', '#ef4444', '#f59e0b', '#8b5cf6', '#ec4899', '#14b8a6', '#f97316', '#6366f1'];
 
 function renderChart(id, config) {
     const canvas = document.getElementById(id);
@@ -254,7 +254,7 @@ renderChart('monthlyChart', {
     data: {
         labels: monthlyData.labels,
         datasets: [
-            { label: 'Income', data: monthlyData.income, backgroundColor: '#10b981', borderRadius: 6 },
+            { label: 'Income', data: monthlyData.income, backgroundColor: '#50C878', borderRadius: 6 },
             { label: 'Expenses', data: monthlyData.expenses, backgroundColor: '#ef4444', borderRadius: 6 },
         ]
     },
@@ -277,12 +277,12 @@ renderChart('cumulativeChart', {
         datasets: [{
             label: 'Balance',
             data: cumulativeData.balance,
-            borderColor: '#3b82f6',
-            backgroundColor: 'rgba(59, 130, 246, 0.1)',
+            borderColor: '#50C878',
+            backgroundColor: 'rgba(80, 200, 120, 0.1)',
             fill: true,
             tension: 0.3,
             pointRadius: 3,
-            pointBackgroundColor: '#3b82f6',
+            pointBackgroundColor: '#50C878',
             borderWidth: 2,
         }]
     },
