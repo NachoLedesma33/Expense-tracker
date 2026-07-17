@@ -1,19 +1,19 @@
 {% load currency_filters %}
-<div class="glass dark:dark-glass rounded-2xl p-6 transition-all duration-200 hover:shadow-lg dark:hover:shadow-blue-900/10">
+<div class="card-solid rounded-xl p-6 transition-all duration-200 hover:shadow-md">
     <p class="text-sm font-medium text-gray-500 dark:text-gray-400">Total Balance</p>
-    <p class="text-2xl font-bold mt-2 {% if stats.balance >= 0 %}text-gray-900 dark:text-gray-100{% else %}text-red-600 dark:text-red-400{% endif %}">
+    <p class="text-2xl font-bold mt-2 tabular {% if stats.balance >= 0 %}text-gray-900 dark:text-gray-100{% else %}text-red-600 dark:text-red-400{% endif %}">
         {{ stats.balance|floatformat:2|currency:user }}
     </p>
 </div>
-<div class="glass dark:dark-glass rounded-2xl p-6 transition-all duration-200 hover:shadow-lg dark:hover:shadow-blue-900/10">
+<div class="card-solid rounded-xl p-6 transition-all duration-200 hover:shadow-md">
     <p class="text-sm font-medium text-gray-500 dark:text-gray-400">Income</p>
-    <p class="text-2xl font-bold text-green-600 dark:text-green-400 mt-2">+{{ stats.income|floatformat:2|currency:user }}</p>
+    <p class="text-2xl font-bold text-emerald-600 dark:text-emerald-400 mt-2 tabular">+{{ stats.income|floatformat:2|currency:user }}</p>
 </div>
-<div class="glass dark:dark-glass rounded-2xl p-6 transition-all duration-200 hover:shadow-lg dark:hover:shadow-blue-900/10">
+<div class="card-solid rounded-xl p-6 transition-all duration-200 hover:shadow-md">
     <p class="text-sm font-medium text-gray-500 dark:text-gray-400">Expenses</p>
-    <p class="text-2xl font-bold text-red-600 dark:text-red-400 mt-2">-{{ stats.expenses|floatformat:2|currency:user }}</p>
+    <p class="text-2xl font-bold text-red-600 dark:text-red-400 mt-2 tabular">-{{ stats.expenses|floatformat:2|currency:user }}</p>
 </div>
-<div class="glass dark:dark-glass rounded-2xl p-6 transition-all duration-200 hover:shadow-lg dark:hover:shadow-blue-900/10">
+<div class="card-solid rounded-xl p-6 transition-all duration-200 hover:shadow-md">
     <p class="text-sm font-medium text-gray-500 dark:text-gray-400">Transactions</p>
-    <p class="text-2xl font-bold text-gray-900 dark:text-gray-100 mt-2">{{ stats.count }}</p>
+    <p class="text-2xl font-bold text-gray-900 dark:text-gray-100 mt-2 tabular">{{ stats.count }}</p>
 </div>
